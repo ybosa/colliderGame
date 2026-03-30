@@ -60,3 +60,46 @@ export class linkedList{
     }
 
 }
+
+export function randomNamedColor() {
+    const colors = ["red", "green", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta"];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+}
+
+/**
+ * Converts named colors to their RGB values.
+ * Adjusts RGB values slightly based on input randomization ranges (rRand, gRand, bRand).
+ * Returns the new color in "rgb(r, g, b)" format.
+ */
+export function randomColourSimilarToNamedColor(namedColor, rRand, gRand, bRand) {
+    // Helper function to map named colors to RGB values
+    function namedColorToRGB(color) {
+        const colorMap = {
+            red: [255, 0, 0],
+            green: [0, 255, 0],
+            blue: [0, 0, 255],
+            yellow: [255, 255, 0],
+            purple: [128, 0, 128],
+            orange: [255, 165, 0],
+            pink: [255, 192, 203],
+            cyan: [0, 255, 255],
+            magenta: [255, 0, 255]
+        };
+        return colorMap[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
+    }
+
+    const [r, g, b] = namedColorToRGB(namedColor);
+    // Add randomness to each RGB component
+    const randomize = (value, maxRand) => Math.max(0, Math.min(255, value + Math.floor(Math.random() * maxRand * 2) - maxRand));
+    const newR = randomize(r, rRand);
+    const newG = randomize(g, gRand);
+    const newB = randomize(b, bRand);
+    return `rgb(${newR}, ${newG}, ${newB})`;
+}
+
+
+export const SHAPES = {
+    SQUARE: "square",
+    CIRCLE: "circle",
+}

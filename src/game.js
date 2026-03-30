@@ -3,9 +3,9 @@
 import controller from "./controller.js";
 import {initCanvas, renderFrame,calculateMaxPlayerDist,isPixelTransparent} from "./view.js";
 import {linkedList} from "./utils.js";
-import Wall from "./wall.js";
-import Obstacle from "./obstacle.js";
-import {GAME_TICK_RATE} from "./config.js";
+import Wall, {buildWalls} from "./wall.js";
+import Obstacle, {buildObstacles} from "./obstacle.js";
+import {GAME_TICK_RATE, MAX_DIST} from "./config.js";
 
 const playerPos = { x: 0, y: 0}
 const canvas = initCanvas()
@@ -14,59 +14,70 @@ const Controller = new controller(playerPos, canvas,MaxDist)
 
 let walls = new linkedList()
 let obstacles = new linkedList()
-
-for(let i = 0; i <  100; i++){
-    walls.put(new Wall(Math.random()*35, 0, 0, "glass.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
-        )
-}
-
-for(let i = 0; i <  100; i++){
-    walls.put(new Wall(Math.random()*35, 0, 0, "wall.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
-        )
-}
-let speed = 1;
-
-
-for(let i = 0; i <  20; i++){
-    obstacles.put(new Obstacle(Math.random()*35, 0, 0, "bars.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
-        )
-}
+let speed = 1; //[m/s]
+let acceleration =1; //[m/s^2]
+let coins = 0;
 
 
 function gameLoop() {
-    if(hasCrashedIntoObstacle(playerPos,obstacles)) {
-        console.log("you lose")
-        speed = 0;
-        return
+    if(hasCrashedIntoObstacle(playerPos,obstacles)){
+        loseGame();
+        return;
     }
-    let largestdistance = 0
-    walls.forEach(wall => {
-        wall.distance -= speed/GAME_TICK_RATE;
-        if(wall.distance > largestdistance) largestdistance = wall.distance;
-    })
-    while (walls.getNext() && walls.get().distance <= -10){
-        walls = walls.getNext()
-        largestdistance = largestdistance + Math.random()
-        const i = Math.floor(Math.random()*4)
-        walls.put(new Wall(largestdistance , 0, 0, null, i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
-            )
+    else{
+        collectCoins(obstacles)
+        const furthestWall = clearPassedWalls(walls);
+        const furthestObstacle = clearPassedWalls(obstacles);
+        speed += acceleration/GAME_TICK_RATE;
+
+
+        if(furthestWall === 0 || !furthestWall){
+            buildWalls(0,1,speed*0.3,speed*1,speed*0.01)
+                .forEach(wall => walls.put(wall))
+            buildWalls(0,speed,speed*0.3,speed*1,speed*0.01)
+                .forEach(wall => walls.put(wall))
+            buildWalls(0,speed*4,speed*0.3,speed*1,speed*0.01)
+                .forEach(wall => walls.put(wall))
+        }
+        else {
+            buildWalls(furthestWall, speed * MAX_DIST, speed * 0.3, 1, 0)
+                .forEach(wall => walls.put(wall))
+        }
+
+        if(furthestObstacle === 0 || !furthestObstacle){
+            buildObstacles(speed*3,speed*6,speed*3,speed*5,speed*0.01)
+                .forEach(obstacle => obstacles.put(obstacle))
+        }
+        else {
+            buildObstacles(furthestObstacle+speed*2, speed * MAX_DIST, 3 , 15, 0)
+                .forEach(obstacle => obstacles.put(obstacle))
+        }
+
+
     }
+}
 
-    obstacles.forEach(obstacle => {
-        obstacle.distance -= speed/GAME_TICK_RATE;
-    })
-
-    while (obstacles.getNext() && obstacles.get().distance < 0){
-        obstacles = obstacles.getNext()
-        const i = Math.floor(Math.random()*4)
-        obstacles.put(new Obstacle(Math.random()*35, 0, 0, "bars.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
-            )
-    }
-
-    // console.log(playerPos)
+function collectCoins(obstacles){
 
 }
 
+function loseGame(){
+    console.log("you lose")
+    speed = 0;
+    acceleration = 0;
+}
+
+function clearPassedWalls(walls){
+    let largestDistance = 0
+    walls.forEach(wall => {
+        wall.distance -= speed/GAME_TICK_RATE;
+        if(wall.distance > largestDistance) largestDistance = wall.distance;
+    })
+    while (walls.getNext() && walls.get().distance <= -10){
+        walls = walls.getNext()
+    }
+    return largestDistance;
+}
 
 function displayLoop(){
         renderFrame(canvas, walls,obstacles,playerPos)
@@ -100,5 +111,4 @@ function hasCrashedIntoObstacle(playerPos,obstacles){
         }
     })
     return hasCrashed;
-
-    }
+}
