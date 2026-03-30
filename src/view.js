@@ -1,4 +1,9 @@
-import {WALL_REL_SIZE} from "./config.js";
+import {WALL_REL_SIZE,IMAGE_PATH, DEBUG_MODE} from "./config.js";
+
+let imageSet = new Set();
+let missingIMGSet = new Set();
+let missingImgName = "missing.png"
+initMissingIMG()
 
 export function initCanvas(){
     const canvas = document.createElement("canvas");
@@ -15,6 +20,7 @@ export function initCanvas(){
 
 export function renderFrame(canvas,walls,playerPos){
     const context = canvas.getContext("2d");
+    loadImages()
     clearScreen(context)
     renderWalls(walls,context,playerPos )
     // drawCursor(context)
@@ -59,8 +65,15 @@ function renderWalls(walls,ctx,playerPos){
         if(size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
         ctx.beginPath();
         ctx.arc(centerX - playerPos.x/wall.distance,centerY - playerPos.y/wall.distance,size,0,2*Math.PI)
-        ctx.fillStyle = wall.colour;
-        ctx.fill();
+
+        if(wall.imgName){
+            const img = getImage(wall.imgName);
+            ctx.drawImage(img, centerX - playerPos.x/wall.distance -size,centerY - playerPos.y/wall.distance -size, size*2, size*2);
+        }
+        else {
+            ctx.fillStyle = wall.colour;
+            ctx.fill();
+        }
         // ctx.lineWidth = 1;
         // ctx.stroke();
     })
@@ -76,4 +89,65 @@ export function calculateMaxPlayerDist(canvas){
         ? SCREEN_HEIGHT * WALL_REL_SIZE
         : SCREEN_WIDTH * WALL_REL_SIZE)();
     return wallSize
+}
+
+
+//image caching and loading
+function loadImages() {
+    missingIMGSet.forEach(imageName => {
+        if (imageSet[imageName] && imageSet[imageName] !== imageSet[missingImgName]) {
+            return;
+        }
+        if (DEBUG_MODE) console.log("loading img: " + imageName)
+        let loadIMG = new Image()
+        loadIMG.src = IMAGE_PATH + imageName
+
+        loadIMG.onload = () => {
+            imageSet[imageName] = loadIMG
+            missingIMGSet.delete(imageName)
+            if (DEBUG_MODE) console.log("loaded img: " + imageName)
+        }
+        loadIMG.onerror = () => {
+            if (DEBUG_MODE) {
+                console.log("error loading image: " + imageName)
+            }
+            imageSet[imageName] = imageSet[missingImgName]
+            missingIMGSet.delete(imageName)
+        }
+
+    })
+
+}
+
+function getImage(imageName) {
+    if(!imageName) return imageSet[missingImgName]
+    if (imageSet[imageName]) {
+        return imageSet[imageName]
+    } else {
+        missingIMGSet.add(imageName)
+        return imageSet[missingImgName]
+    }
+}
+
+function initMissingIMG() {
+    // Create a 8x8 canvas
+    const size = 8;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+
+    // Draw checkerboard pattern
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const isBlack = (x + y) % 2 === 0;
+            ctx.fillStyle = isBlack ? "#000000" : "#FF00FF";
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+
+    // Convert canvas to an Image object
+    const loadIMG = new Image();
+    loadIMG.src = canvas.toDataURL("image/png");
+    imageSet[missingImgName] = loadIMG;
 }

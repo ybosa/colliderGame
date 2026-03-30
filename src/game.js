@@ -15,10 +15,15 @@ const Controller = new controller(playerPos, canvas,MaxDist)
 let walls = new linkedList()
 
 for(let i = 0; i <  1000; i++){
-    walls.put(new Wall(Math.random()*305, 0, 0, "wall", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
+    walls.put(new Wall(Math.random()*305, 0, 0, "glass.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
         , comparatorForLinkedList)
 }
-let speed = 0.5;
+
+for(let i = 0; i <  1000; i++){
+    walls.put(new Wall(Math.random()*305, 0, 0, "wall.png", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
+        , comparatorForLinkedList)
+}
+let speed = 50;
 
 
 function gameLoop() {
@@ -29,9 +34,9 @@ function gameLoop() {
     })
     while (walls.getNext() && walls.get().distance <= -10){
         walls = walls.getNext()
-        largestdistance = largestdistance + Math.random()*100
+        largestdistance = largestdistance + Math.random()
         const i = Math.floor(Math.random()*4)
-        walls.put(new Wall(largestdistance , 0, 0, "wall", i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
+        walls.put(new Wall(largestdistance , 0, 0, null, i % 3 === 0 ? "red" : i % 3 === 1 ? "green" : "blue")
             , comparatorForLinkedList)
     }
 
