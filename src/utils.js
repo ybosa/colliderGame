@@ -5,7 +5,8 @@ export class linkedList{
 
     }
 
-    put(element,comparator){
+    put(element){
+        const comparator = element.comparator;
         if(!this.element){
             this.element = element;
         }

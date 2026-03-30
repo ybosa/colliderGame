@@ -9,6 +9,7 @@ export const IMAGE_PATH = "./images/"
 
 export const WALL_REL_SIZE = 1; //relative to screen size at dist = 1 [m]
 export const CLOSEST_REL_WALL_DIST = 0.95;
+export const TRANSPARENCY_THRESHOLD = 100;
 
 export default {GAME_TICK_RATE,SCREEN_TICK_RATE,DEBUG_MODE,IMAGE_PATH,SENSITIVITY}
 

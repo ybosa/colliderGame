@@ -1,4 +1,4 @@
-import {WALL_REL_SIZE,IMAGE_PATH, DEBUG_MODE} from "./config.js";
+import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD} from "./config.js";
 
 let imageSet = new Set();
 let missingIMGSet = new Set();
@@ -18,12 +18,13 @@ export function initCanvas(){
     return canvas
 }
 
-export function renderFrame(canvas,walls,playerPos){
+export function renderFrame(canvas,walls,obstacles,playerPos){
     const context = canvas.getContext("2d");
     loadImages()
     clearScreen(context)
     renderWalls(walls,context,playerPos )
-    // drawCursor(context)
+    renderWalls(obstacles,context,playerPos )
+    drawCursor(context)
 
 }
 
@@ -39,7 +40,7 @@ function drawCursor(ctx){
     const centerY = SCREEN_HEIGHT / 2
 
     ctx.strokeStyle = "black";
-    let size = 5;
+    let size = 2;
     ctx.beginPath();
     ctx.arc(centerX,centerY,size,0,2*Math.PI)
     ctx.fillStyle = "white";
@@ -89,6 +90,43 @@ export function calculateMaxPlayerDist(canvas){
         ? SCREEN_HEIGHT * WALL_REL_SIZE
         : SCREEN_WIDTH * WALL_REL_SIZE)();
     return wallSize
+}
+
+function calcImageSampleXYFromPlayerPos(playerPos, canvas) {
+    const ctx = canvas.getContext("2d");
+    const SCREEN_WIDTH = ctx.canvas.width;
+    const SCREEN_HEIGHT = ctx.canvas.height;
+    // const centerX = SCREEN_WIDTH / 2 // - playerPos.x; fake camera rotation
+    // const centerY = SCREEN_HEIGHT / 2 // - playerPos.y;
+    const wallSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
+        ? SCREEN_HEIGHT * WALL_REL_SIZE
+        : SCREEN_WIDTH * WALL_REL_SIZE)();
+
+    const sx = (wallSize + playerPos.x ) / (wallSize*2 )
+    const sy = (wallSize + playerPos.y ) / (wallSize*2 )
+
+    return {sx:sx, sy:sy}
+}
+
+export function isPixelTransparent(imageName, playerPos,distance,mainCanvas) {
+    const img = getImage(imageName);
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 1;
+    canvas.height = 1;
+    const {sx,sy} = calcImageSampleXYFromPlayerPos(playerPos, mainCanvas)
+    const x = Math.floor(sx * img.width);
+    const y = Math.floor(sy * img.height);
+
+
+    ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1);
+
+    const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+
+    const alpha = pixelData[3]; // RGBA → index 3 is alpha
+    return alpha <= TRANSPARENCY_THRESHOLD; // true if fully transparent
 }
 
 
