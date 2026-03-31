@@ -1,3 +1,5 @@
+import {COLOUR_MAP, COLOURS} from "./config.js";
+
 export class linkedList{
     constructor(element) {
         this.element = element;
@@ -62,7 +64,7 @@ export class linkedList{
 }
 
 export function randomNamedColor() {
-    const colors = ["red", "green", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta"];
+    const colors = COLOURS;
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
 }
@@ -75,18 +77,7 @@ export function randomNamedColor() {
 export function randomColourSimilarToNamedColor(namedColor, rRand, gRand, bRand) {
     // Helper function to map named colors to RGB values
     function namedColorToRGB(color) {
-        const colorMap = {
-            red: [255, 0, 0],
-            green: [0, 255, 0],
-            blue: [0, 0, 255],
-            yellow: [255, 255, 0],
-            purple: [128, 0, 128],
-            orange: [255, 165, 0],
-            pink: [255, 192, 203],
-            cyan: [0, 255, 255],
-            magenta: [255, 0, 255]
-        };
-        return colorMap[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
+        return COLOUR_MAP[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
     }
 
     const [r, g, b] = namedColorToRGB(namedColor);
