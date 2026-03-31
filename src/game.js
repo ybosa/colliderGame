@@ -67,14 +67,14 @@ function loseGame(){
     acceleration = 0;
 }
 
-function clearPassedWalls(walls){
+function clearPassedWalls(wallsList){
     let largestDistance = 0
-    walls.forEach(wall => {
+    wallsList.forEach(wall => {
         wall.distance -= speed/GAME_TICK_RATE;
         if(wall.distance > largestDistance) largestDistance = wall.distance;
     })
-    while (walls.getNext() && walls.get().distance <= -10){
-        walls = walls.getNext()
+    while (wallsList.getNext() && wallsList.get().distance <= 0){
+        wallsList = wallsList.getNext()
     }
     return largestDistance;
 }

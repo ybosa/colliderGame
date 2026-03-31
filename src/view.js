@@ -23,7 +23,7 @@ export function renderFrame(canvas,walls,obstacles,playerPos){
     loadImages()
     clearScreen(context)
     renderWalls(walls,context,playerPos )
-    renderWalls(obstacles,context,playerPos )
+    renderObstacles(obstacles,context,playerPos )
     drawCursor(context)
 
 }
@@ -60,23 +60,45 @@ function renderWalls(walls,ctx,playerPos){
         : SCREEN_WIDTH * WALL_REL_SIZE)();
 
     walls.forEach(wall => {
-        // if(wall.distance <= 0) return;
+        if (wall.distance <= 0) return;
         ctx.strokeStyle = "white";
         let size = wallSize / wall.distance;
-        if(size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
+        if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
         ctx.beginPath();
-        ctx.arc(centerX - playerPos.x/wall.distance,centerY - playerPos.y/wall.distance,size,0,2*Math.PI)
+        ctx.arc(centerX - playerPos.x / wall.distance, centerY - playerPos.y / wall.distance, size, 0, 2 * Math.PI)
 
-        if(wall.imgName){
-            const img = getImage(wall.imgName);
-            ctx.drawImage(img, centerX - playerPos.x/wall.distance -size,centerY - playerPos.y/wall.distance -size, size*2, size*2);
-        }
-        else {
-            ctx.fillStyle = wall.colour;
-            ctx.fill();
-        }
+
+        ctx.fillStyle = wall.colour;
+        ctx.fill();
+
         // ctx.lineWidth = 1;
         // ctx.stroke();
+    })
+
+    ctx.restore();
+}
+
+function renderObstacles(obstacles,ctx,playerPos){
+    ctx.save();
+    const SCREEN_WIDTH = ctx.canvas.width;
+    const SCREEN_HEIGHT = ctx.canvas.height;
+    const centerX = SCREEN_WIDTH / 2 // - playerPos.x; fake camera rotation
+    const centerY = SCREEN_HEIGHT / 2 // - playerPos.y;
+    const obstacleSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
+        ? SCREEN_HEIGHT * WALL_REL_SIZE
+        : SCREEN_WIDTH * WALL_REL_SIZE)();
+
+    obstacles.forEach(obstacle => {
+        if(obstacle.distance <= 0) return;
+        ctx.strokeStyle = "white";
+        let size = obstacleSize / obstacle.distance;
+        if(size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
+
+        if(obstacle.imgName){
+            const img = getImage(obstacle.imgName);
+            ctx.drawImage(img, centerX - playerPos.x/obstacle.distance -size,centerY - playerPos.y/obstacle.distance -size, size*2, size*2);
+        }
+
     })
 
     ctx.restore();

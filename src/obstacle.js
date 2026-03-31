@@ -7,6 +7,7 @@ export default class Obstacle{
         this.rotSpeed = rotSpeed;
         this.imgName = imgName;
         this.coins = coins;
+        this.shape = shape;
     }
 
     comparator(elementToAdd, existingElement) {
@@ -30,7 +31,7 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
         angle += rotSpacing;
         switch (random) {
             case 0:
-                obstacles.push(new Obstacle(distance, angle, rotSpeed, "bars.png", shape))
+                obstacles.push(new Obstacle(distance, angle, rotSpeed, "walltest3.png", shape))
                 break;
             default:
                 obstacles.push(new Obstacle(distance, angle, rotSpeed, "glass.png", shape))
