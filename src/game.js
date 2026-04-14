@@ -37,10 +37,12 @@ function gameLoop() {
         totalDistance += speed/GAME_TICK_RATE;
         speed += acceleration/GAME_TICK_RATE;
 
+        spinWalls(walls)
+        spinWalls(obstacles)
+        //new walls
         if(totalDistance > nextColourChange){
             colour = randomNamedColor()
         }
-
 
         if(furthestWall === 0 || !furthestWall){
             buildWalls(0,1,speed*0.3,speed*1,colour,1)
@@ -88,6 +90,13 @@ function clearPassedWalls(wallsList){
         walls = wallsList
     }
     return largestDistance;
+}
+
+function spinWalls(wallsList){
+    wallsList.forEach(wall => {
+        wall.angle += wall.rotSpeed/GAME_TICK_RATE;
+        }
+    )
 }
 
 function countList(list){
