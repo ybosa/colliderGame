@@ -1,4 +1,5 @@
 import {SHAPES} from "./config.js";
+import {randomNamedColor} from "./utils.js";
 
 export default class Obstacle{
     constructor(distance, angle, rotSpeed, imgName,shape,coins) {
@@ -21,24 +22,21 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
     let distance = currentDistance;
     let obstacles = []
 
-    const SWITCHTABLESIZE = 2;
-    let random = Math.floor(Math.random() * SWITCHTABLESIZE)
+    let random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
     if (seed) {
         random = seed;
     }
     while (distance < maxDistance) {
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
-        random = Math.floor(Math.random() * SWITCHTABLESIZE)
-        switch (random) {
-            case 0:
-                obstacles.push(new Obstacle(distance, angle, rotSpeed, "walltest3.png", shape))
-                break;
-            default:
-                obstacles.push(new Obstacle(distance, angle, rotSpeed, "glass.png", shape))
-                break;
-        }
+        random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
+        const colour = "-"+randomNamedColor()
+
+        obstacles.push(new Obstacle(distance, angle, rotSpeed, OBSTACLE_TYPES[random]+colour+fileType, shape))
 
     }
     return obstacles
 }
+
+const OBSTACLE_TYPES = ["1corner","1hole","2corner","2hole","4corners","4hole","cross"]
+const fileType = ".png"
