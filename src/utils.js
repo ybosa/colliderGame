@@ -69,28 +69,22 @@ export function randomNamedColor() {
     return colors[randomIndex];
 }
 
-/**
- * Converts named colors to their RGB values.
- * Adjusts RGB values slightly based on input randomization ranges (rRand, gRand, bRand).
- * Returns the new color in "rgb(r, g, b)" format.
- */
-export function randomColourSimilarToNamedColor(namedColor, rRand, gRand, bRand) {
-    // Helper function to map named colors to RGB values
-    function namedColorToRGB(color) {
-        return COLOUR_MAP[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
-    }
-
-    const [r, g, b] = namedColorToRGB(namedColor);
-    // Add randomness to each RGB component
-    const randomize = (value, maxRand) => Math.max(0, Math.min(255, value + Math.floor(Math.random() * maxRand * 2) - maxRand));
-    const newR = randomize(r, rRand);
-    const newG = randomize(g, gRand);
-    const newB = randomize(b, bRand);
-    return `rgb(${newR}, ${newG}, ${newB})`;
-}
-
-
-export const SHAPES = {
-    SQUARE: "square",
-    CIRCLE: "circle",
-}
+// /**
+//  * Converts named colors to their RGB values.
+//  * Adjusts RGB values slightly based on input randomization ranges (rRand, gRand, bRand).
+//  * Returns the new color in "rgb(r, g, b)" format.
+//  */
+// export function randomColourSimilarToNamedColor(namedColor, rRand, gRand, bRand) {
+//     // Helper function to map named colors to RGB values
+//     function namedColorToRGB(color) {
+//         return COLOUR_MAP[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
+//     }
+//
+//     const [r, g, b] = namedColorToRGB(namedColor);
+//     // Add randomness to each RGB component
+//     const randomize = (value, maxRand) => Math.max(0, Math.min(255, value + Math.floor(Math.random() * maxRand * 2) - maxRand));
+//     const newR = randomize(r, rRand);
+//     const newG = randomize(g, gRand);
+//     const newB = randomize(b, bRand);
+//     return `rgb(${newR}, ${newG}, ${newB})`;
+// }

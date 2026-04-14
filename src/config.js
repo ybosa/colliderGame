@@ -23,6 +23,11 @@ export const COLOUR_MAP = {
     orange: [255, 165, 0],
 }
 
+export const SHAPES = {
+    // SQUARE: "square",  Not yet implemented
+    CIRCLE: "circle",
+}
+
 export default {GAME_TICK_RATE,SCREEN_TICK_RATE,DEBUG_MODE,IMAGE_PATH,SENSITIVITY}
 
 export const DEBUGVARS = {DEBUG_MODE, setDebugMode : (val) => {DEBUG_MODE = val} };

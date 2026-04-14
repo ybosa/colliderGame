@@ -1,4 +1,4 @@
-import {SHAPES} from "./utils.js";
+import {SHAPES} from "./config.js";
 
 export default class Obstacle{
     constructor(distance, angle, rotSpeed, imgName,shape,coins) {

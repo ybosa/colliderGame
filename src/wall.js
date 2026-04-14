@@ -1,4 +1,5 @@
-import {randomNamedColor,randomColourSimilarToNamedColor, SHAPES} from "./utils.js";
+import {randomNamedColor} from "./utils.js";
+import {SHAPES} from "./config.js";
 
 export default class Wall {
     constructor(distance, angle, rotSpeed, imgName,colour,shape) {
@@ -34,7 +35,7 @@ export function buildWalls(currentDistance, maxDistance, minSpacing, MaxSpacing,
                 walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(), shape))
                 break;
             default:
-                walls.push(new Wall(distance, angle, rotSpeed, null, randomColourSimilarToNamedColor(savedRandomNamedColour,25,25,25), shape))
+                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(), shape))
                 break;
         }
 
