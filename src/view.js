@@ -33,11 +33,20 @@ function clearScreen(context){
     context.fillRect(0, 0, context.canvas.width, context.canvas.height)
 }
 
-function drawCursor(ctx){
+function calcScreenValues(ctx){
     const SCREEN_WIDTH = ctx.canvas.width;
     const SCREEN_HEIGHT = ctx.canvas.height;
     const centerX = SCREEN_WIDTH / 2
     const centerY = SCREEN_HEIGHT / 2
+    const wallSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
+        ? SCREEN_HEIGHT * WALL_REL_SIZE
+        : SCREEN_WIDTH * WALL_REL_SIZE)();
+
+    return {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize}
+}
+
+function drawCursor(ctx){
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY} = calcScreenValues(ctx)
 
     ctx.strokeStyle = "black";
     let size = 2;
@@ -51,13 +60,7 @@ function drawCursor(ctx){
 
 function renderWalls(walls,ctx,playerPos){
     ctx.save();
-    const SCREEN_WIDTH = ctx.canvas.width;
-    const SCREEN_HEIGHT = ctx.canvas.height;
-    const centerX = SCREEN_WIDTH / 2 // - playerPos.x; fake camera rotation
-    const centerY = SCREEN_HEIGHT / 2 // - playerPos.y;
-    const wallSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
-        ? SCREEN_HEIGHT * WALL_REL_SIZE
-        : SCREEN_WIDTH * WALL_REL_SIZE)();
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
 
     walls.forEach(wall => {
         if (wall.distance <= 0) return;
@@ -80,14 +83,8 @@ function renderWalls(walls,ctx,playerPos){
 
 function renderObstacles(obstacles,ctx,playerPos){
     ctx.save();
-    const SCREEN_WIDTH = ctx.canvas.width;
-    const SCREEN_HEIGHT = ctx.canvas.height;
-    const centerX = SCREEN_WIDTH / 2 // - playerPos.x; fake camera rotation
-    const centerY = SCREEN_HEIGHT / 2 // - playerPos.y;
-    const obstacleSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
-        ? SCREEN_HEIGHT * WALL_REL_SIZE
-        : SCREEN_WIDTH * WALL_REL_SIZE)();
-
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
+    const obstacleSize = wallSize;
     obstacles.forEach(obstacle => {
         if(obstacle.distance <= 0) return;
         ctx.strokeStyle = "white";
@@ -106,11 +103,7 @@ function renderObstacles(obstacles,ctx,playerPos){
 
 export function calculateMaxPlayerDist(canvas){
     const ctx = canvas.getContext("2d");
-    const SCREEN_WIDTH = ctx.canvas.width;
-    const SCREEN_HEIGHT = ctx.canvas.height;
-    const wallSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
-        ? SCREEN_HEIGHT * WALL_REL_SIZE
-        : SCREEN_WIDTH * WALL_REL_SIZE)();
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
     return wallSize
 }
 
