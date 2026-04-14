@@ -29,6 +29,7 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
     while (distance < maxDistance) {
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
+        random = Math.floor(Math.random() * SWITCHTABLESIZE)
         switch (random) {
             case 0:
                 obstacles.push(new Obstacle(distance, angle, rotSpeed, "walltest3.png", shape))

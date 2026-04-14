@@ -40,7 +40,7 @@ function gameLoop() {
                 .forEach(wall => walls.put(wall))
         }
         else {
-            buildWalls(furthestWall, speed * MAX_DIST, 10,15, 0)
+            buildWalls(furthestWall, MAX_DIST, 10,15, 0)
                 .forEach(wall => walls.put(wall))
         }
 
@@ -49,10 +49,9 @@ function gameLoop() {
                 .forEach(obstacle => obstacles.put(obstacle))
         }
         else {
-            buildObstacles(furthestObstacle+speed*2, speed * MAX_DIST, 3 , 15, 0)
+            buildObstacles(furthestObstacle+speed*2,  MAX_DIST, 3 , 15, 0)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
-        console.log("Wall len " + countList(walls) + " Obstacle len " + countList(obstacles))
     }
 }
 

@@ -10,7 +10,7 @@ export const IMAGE_PATH = "./images/"
 export const WALL_REL_SIZE = 1; //relative to screen size at dist = 1 [m]
 export const CLOSEST_REL_WALL_DIST = 0.95;
 export const TRANSPARENCY_THRESHOLD = 100; //Max value of Alpha to be considered passable [0-255]
-export const MAX_DIST = 20; // Max distance from player to render [seconds]
+export const MAX_DIST = 200; // Max distance from player to render [m]
 export const DETAIL_THRESHOLD = 5//Smallest width view will bother to render details in walls [pixels]
 export const WALL_LINE_WIDTH = 3;
 export const WALL_ARC_LINE_SCALING_WIDTH = 15;
