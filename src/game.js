@@ -36,11 +36,11 @@ function gameLoop() {
                 .forEach(wall => walls.put(wall))
             buildWalls(0,speed,speed*0.3,speed*1,speed*0.01)
                 .forEach(wall => walls.put(wall))
-            buildWalls(0,speed*4,speed*0.3,speed*1,speed*0.01)
+            buildWalls(0,speed*4,10,15,speed*0.01)
                 .forEach(wall => walls.put(wall))
         }
         else {
-            buildWalls(furthestWall, speed * MAX_DIST, speed * 0.3, 1, 0)
+            buildWalls(furthestWall, speed * MAX_DIST, 10,15, 0)
                 .forEach(wall => walls.put(wall))
         }
 
@@ -52,8 +52,7 @@ function gameLoop() {
             buildObstacles(furthestObstacle+speed*2, speed * MAX_DIST, 3 , 15, 0)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
-
-
+        console.log("Wall len " + countList(walls) + " Obstacle len " + countList(obstacles))
     }
 }
 
@@ -73,10 +72,20 @@ function clearPassedWalls(wallsList){
         wall.distance -= speed/GAME_TICK_RATE;
         if(wall.distance > largestDistance) largestDistance = wall.distance;
     })
-    while (wallsList.getNext() && wallsList.get().distance <= 0){
+    while (wallsList.getNext() && wallsList.get().distance <= -10*speed){
         wallsList = wallsList.getNext()
+        walls = wallsList
     }
     return largestDistance;
+}
+
+function countList(list){
+    let count = 0;
+    while (list.getNext() ){
+        count++;
+        list = list.getNext()
+    }
+    return count;
 }
 
 function displayLoop(){

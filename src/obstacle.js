@@ -26,7 +26,7 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
     if (seed) {
         random = seed;
     }
-    do {
+    while (distance < maxDistance) {
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
         switch (random) {
@@ -38,6 +38,6 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
                 break;
         }
 
-    } while (distance < maxDistance)
+    }
     return obstacles
 }

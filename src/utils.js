@@ -1,5 +1,3 @@
-import {COLOUR_MAP, COLOURS} from "./config.js";
-
 export class linkedList{
     constructor(element) {
         this.element = element;
@@ -69,22 +67,43 @@ export function randomNamedColor() {
     return colors[randomIndex];
 }
 
-// /**
-//  * Converts named colors to their RGB values.
-//  * Adjusts RGB values slightly based on input randomization ranges (rRand, gRand, bRand).
-//  * Returns the new color in "rgb(r, g, b)" format.
-//  */
-// export function randomColourSimilarToNamedColor(namedColor, rRand, gRand, bRand) {
-//     // Helper function to map named colors to RGB values
-//     function namedColorToRGB(color) {
-//         return COLOUR_MAP[color.toLowerCase()] || [0, 0, 0]; // Defaults to black if color not recognized
-//     }
-//
-//     const [r, g, b] = namedColorToRGB(namedColor);
-//     // Add randomness to each RGB component
-//     const randomize = (value, maxRand) => Math.max(0, Math.min(255, value + Math.floor(Math.random() * maxRand * 2) - maxRand));
-//     const newR = randomize(r, rRand);
-//     const newG = randomize(g, gRand);
-//     const newB = randomize(b, bRand);
-//     return `rgb(${newR}, ${newG}, ${newB})`;
-// }
+
+export const COLOURS =["red", "green", "blue", "yellow", "purple", "orange"];
+export const COLOUR_PALETTE = {
+    "red":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "Crimson",
+        fillColour2: "FireBrick",
+    },
+    "green":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "ForestGreen",
+        fillColour2: "DarkGreen",
+    },
+    "blue":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "SteelBlue",
+        fillColour2: "RoyalBlue",
+    },
+    "yellow":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "Yellow",
+        fillColour2: "GoldenRod",
+    },
+    "purple":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "Purple",
+        fillColour2: "DarkViolet",
+    },
+    "orange":{
+        lineColour: "white",
+        lineColour2: "black",
+        fillColour: "OrangeRed",
+        fillColour2: "DarkOrange",
+    }
+}

@@ -2,12 +2,17 @@ import {randomNamedColor} from "./utils.js";
 import {SHAPES} from "./config.js";
 
 export default class Wall {
-    constructor(distance, angle, rotSpeed, imgName,colour,shape) {
+    constructor(distance, angle, rotSpeed, imgName,colour,style,shape) {
         this.distance = distance;
         this.angle = angle;
         this.rotSpeed = rotSpeed;
         this.imgName = imgName;
         this.colour = colour;
+        this.style = style;
+        this.shape = shape;
+
+        if(!this.style) this.style = pickRandomStyle()
+        if(!this.shape) this.shape = SHAPES.CIRCLE;
     }
 
     comparator(elementToAdd, existingElement) {
@@ -27,18 +32,26 @@ export function buildWalls(currentDistance, maxDistance, minSpacing, MaxSpacing,
     if (seed) {
         random = seed;
     }
-    do {
+    while (distance < maxDistance) {
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
         switch (random) {
             case 0:
-                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(), shape))
+                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(),pickRandomStyle(),  shape))
                 break;
             default:
-                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(), shape))
+                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(),pickRandomStyle(), shape))
                 break;
         }
 
-    } while (distance < maxDistance)
+    }
     return walls
 }
+
+export const STYLES = {
+    SOLID: "solid",
+    EqualAlternating12: "EqualAlternating12",
+    EqualAlternating6: "EqualAlternating6",
+}
+
+export const pickRandomStyle = () => STYLES[Object.keys(STYLES)[Math.floor(Math.random() * Object.keys(STYLES).length)]]

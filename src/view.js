@@ -1,4 +1,6 @@
-import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD} from "./config.js";
+import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD,DETAIL_THRESHOLD,WALL_LINE_WIDTH,WALL_ARC_LINE_SCALING_WIDTH} from "./config.js";
+import {COLOUR_PALETTE} from "./utils.js"
+import {STYLES} from "./wall.js";
 
 let imageSet = new Set();
 let missingIMGSet = new Set();
@@ -63,22 +65,141 @@ function renderWalls(walls,ctx,playerPos){
     const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
 
     walls.forEach(wall => {
-        if (wall.distance <= 0) return;
-        ctx.strokeStyle = "white";
-        let size = wallSize / wall.distance;
-        if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
-        ctx.beginPath();
-        ctx.arc(centerX - playerPos.x / wall.distance, centerY - playerPos.y / wall.distance, size, 0, 2 * Math.PI)
+        let distance = wall.distance;
+        if (distance <= 0) distance = 0.001
+        let size = wallSize / distance;
+        if (size < 0) return
+        const colourPallet = COLOUR_PALETTE[wall.colour]
+        const horizonAdj = adjustForPlayerMovement(playerPos, 10000);
+
+        function drawEqualySpacedAlterning(numSlices,detailSpacing) {
+            //fill colours in alternating slices
+            let angle = wall.angle;
+            const adj = adjustForPlayerMovement(playerPos, distance);
+            for (let i = 0; i < numSlices; i++) {
+                fillWallArcRadial(ctx, angle, angle + 2 * Math.PI / numSlices, size, (i % 2) ? colourPallet.fillColour : colourPallet.fillColour2, adj)
+                angle += 2 * Math.PI / numSlices
+            }
+
+            //draw lines bounding the colours
+            angle = wall.angle;
+            for (let i = 0; i < numSlices; i++) {
+                drawWallLineRadial(ctx, angle, size, 1, (i % 2) ? colourPallet.lineColour : colourPallet.lineColour2, WALL_LINE_WIDTH, adj, horizonAdj)
+                angle += 2 * Math.PI / numSlices
+            }
+            //draw detailing lines
+            const startDist = wall.distance;
+            const endDist = wallSize / (DETAIL_THRESHOLD)
+            let detailDist = startDist;
+            let count = 0
+            while (detailDist < endDist) {
+                if(detailDist> 0 ){
+                    let pick = (Math.floor(numSlices * detailSpacing) + count) % 5;
+                    let detailAngle = wall.angle;
+                    const detailSize = wallSize/ detailDist
+                    const detailADJ = adjustForPlayerMovement(playerPos, detailDist)
+
+                    switch (pick) {
+                        case 0:
+                            for (let i = 1; i < numSlices; i = i + 2) {
+                                drawWallLineArc(ctx, detailAngle, detailAngle + 2 * Math.PI / numSlices, detailSize, ((count + 1) % 2) ? colourPallet.lineColour : colourPallet.lineColour2, WALL_ARC_LINE_SCALING_WIDTH / detailDist, detailADJ)
+                                detailAngle += 2 * Math.PI / numSlices * 2
+                            }
+                            break;
+                        case 1:
+                            for (let i = 0; i < numSlices; i = i + 2) {
+                                drawWallLineArc(ctx, detailAngle, detailAngle + 2 * Math.PI / numSlices, detailSize, (count % 2) ? colourPallet.lineColour : colourPallet.lineColour2, WALL_ARC_LINE_SCALING_WIDTH / detailDist, detailADJ)
+                                detailAngle += 2 * Math.PI / numSlices * 2
+                            }
+                            break;
+                        case 3:
+                            for (let i = 0; i < numSlices; i = i + 3) {
+                                drawWallLineArc(ctx, detailAngle, detailAngle + 2 * Math.PI / numSlices, detailSize, ((count + i) % 2) ? colourPallet.lineColour : colourPallet.lineColour2, WALL_ARC_LINE_SCALING_WIDTH / detailDist, detailADJ)
+                                detailAngle += 2 * Math.PI / numSlices * 3
+                            }
+                            break;
+                        default:
+                            break
+                    }
+
+                }
+                count ++;
+                detailDist+=detailSpacing;
+            }
 
 
-        ctx.fillStyle = wall.colour;
-        ctx.fill();
+        }
 
-        // ctx.lineWidth = 1;
-        // ctx.stroke();
+        if(size<= DETAIL_THRESHOLD){
+            fillWallCircle(ctx,size,colourPallet.fillColour,adjustForPlayerMovement(playerPos,distance))
+        }
+        else {
+            drawWallLineCircle(ctx, size, colourPallet.lineColour, WALL_ARC_LINE_SCALING_WIDTH/distance, adjustForPlayerMovement(playerPos, distance))
+            switch (wall.style) {
+                case STYLES.EqualAlternating12:
+                    drawEqualySpacedAlterning(12,1);
+                    break;
+                case STYLES.EqualAlternating6:
+                    drawEqualySpacedAlterning(6,2);
+                    break
+                case STYLES.SOLID:
+                    fillWallCircle(ctx, size, colourPallet.fillColour, adjustForPlayerMovement(playerPos, distance))
+                    break;
+                default:
+                    fillWallCircle(ctx, size, colourPallet.fillColour, adjustForPlayerMovement(playerPos, distance))
+                    break;
+            }
+        }
     })
-
     ctx.restore();
+}
+
+function adjustForPlayerMovement(playerPos,distance){
+    const deltaX = - playerPos.x / distance;
+    const deltaY = - playerPos.y / distance;
+    return {deltaX,deltaY}
+}
+
+function drawWallLineRadial(ctx,angle,sizeClose,sizeFar,colour,width,playerMovementADJClose,playerMovementADJFar){
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
+    const startX = centerX + sizeClose * Math.cos(angle) + playerMovementADJClose.deltaX;
+    const startY = centerY + sizeClose * Math.sin(angle) + playerMovementADJClose.deltaY;
+    const endX = centerX + sizeFar * Math.cos(angle) + playerMovementADJFar.deltaX;
+    const endY = centerY + sizeFar * Math.sin(angle) + playerMovementADJFar.deltaY;
+
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+}
+
+function drawWallLineArc(ctx,angleStart,angleEnd,size,colour,width,playerMovementADJ){
+    const {SCREEN_WIDTH, SCREEN_HEIGHT, centerX, centerY, wallSize} = calcScreenValues(ctx);
+    ctx.beginPath();
+    ctx.arc(centerX + playerMovementADJ.deltaX , centerY + playerMovementADJ.deltaY, size, angleStart, angleEnd);
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = width;
+    ctx.stroke();
+}
+
+function drawWallLineCircle(ctx,size,colour,width,playerMovementADJ){
+    drawWallLineArc(ctx,0,2*Math.PI,size,colour,width,playerMovementADJ)
+}
+
+function fillWallArcRadial(ctx,angleStart,angleEnd,sizeClose,colour,playerMovementADJClose){
+    const {SCREEN_WIDTH, SCREEN_HEIGHT, centerX, centerY, wallSize} = calcScreenValues(ctx);
+    ctx.beginPath();
+    ctx.moveTo(centerX , centerY );
+    ctx.arc(centerX + playerMovementADJClose.deltaX, centerY + playerMovementADJClose.deltaY, sizeClose, angleStart, angleEnd);
+    ctx.closePath();
+    ctx.fillStyle = colour;
+    ctx.fill();
+}
+
+function fillWallCircle(ctx, sizeClose, colour,playerMovementADJClose) {
+    fillWallArcRadial(ctx, 0, 2 * Math.PI, sizeClose, colour,playerMovementADJClose);
 }
 
 function renderObstacles(obstacles,ctx,playerPos){
