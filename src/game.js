@@ -43,28 +43,26 @@ function gameLoop() {
 
 
         if(furthestWall === 0 || !furthestWall){
-            buildWalls(0,1,speed*0.3,speed*1,colour,speed*0.01)
+            buildWalls(0,1,speed*0.3,speed*1,colour,1)
                 .forEach(wall => walls.put(wall))
-            buildWalls(0,speed,speed*0.3,speed*1,colour,speed*0.01)
+            buildWalls(0,speed,speed*0.3,speed*1,colour,1)
                 .forEach(wall => walls.put(wall))
-            buildWalls(0,speed*4,10,15,colour,speed*0.01)
+            buildWalls(0,speed*4,10,15,colour,1)
                 .forEach(wall => walls.put(wall))
         }
         else {
-            buildWalls(furthestWall, MAX_DIST, 10,15, colour,0)
+            buildWalls(furthestWall, MAX_DIST, 10,15, colour,Math.random() * 3/speed)
                 .forEach(wall => walls.put(wall))
         }
 
         if(furthestObstacle === 0 || !furthestObstacle){
-            buildObstacles(speed*3,speed*12,speed*3,speed*5,speed*0.01,colour)
+            buildObstacles(speed*3,speed*12,speed*3,speed*5,1,colour)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
         else {
-            buildObstacles(furthestObstacle+speed*2,  MAX_DIST, 3 , 15, 0,colour)
+            buildObstacles(furthestObstacle+speed*2,  MAX_DIST, 3 , 15, Math.random() * 3/speed,colour)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
-
-        console.log("obstacles: " + countList(obstacles))
     }
 }
 
@@ -128,7 +126,7 @@ function hasCrashedIntoObstacle(playerPos,obstacles){
         if(obstacle.distance <= 0 || obstacle.distance >= speed/GAME_TICK_RATE) {
             return;
         }
-        else if(!isPixelTransparent(obstacle.imgName,playerPos,obstacle.distance,canvas)){
+        else if(!isPixelTransparent(obstacle.imgName,playerPos,canvas,obstacle.angle)){
             hasCrashed = true;
         }
     })

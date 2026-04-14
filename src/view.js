@@ -204,21 +204,23 @@ function fillWallCircle(ctx, sizeClose, colour,playerMovementADJClose) {
 
 function renderObstacles(obstacles,ctx,playerPos){
     ctx.save();
-    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
+    const {SCREEN_WIDTH, SCREEN_HEIGHT, centerX, centerY, wallSize} = calcScreenValues(ctx)
     const obstacleSize = wallSize;
     obstacles.forEach(obstacle => {
-        if(obstacle.distance <= 0) return;
+        if (obstacle.distance <= 0) return;
         ctx.strokeStyle = "white";
         let size = obstacleSize / obstacle.distance;
-        if(size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
+        if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
 
-        if(obstacle.imgName){
+        if (obstacle.imgName) {
             const img = getImage(obstacle.imgName);
-            ctx.drawImage(img, centerX - playerPos.x/obstacle.distance -size,centerY - playerPos.y/obstacle.distance -size, size*2, size*2);
+            ctx.save();
+            ctx.translate(centerX - playerPos.x / obstacle.distance, centerY - playerPos.y / obstacle.distance);
+            ctx.rotate(obstacle.angle);
+            ctx.drawImage(img, -size, -size, size * 2, size * 2);
+            ctx.restore();
         }
-
     })
-
     ctx.restore();
 }
 
@@ -228,23 +230,22 @@ export function calculateMaxPlayerDist(canvas){
     return wallSize
 }
 
-function calcImageSampleXYFromPlayerPos(playerPos, canvas) {
+function calcImageSampleXYFromPlayerPos(playerPos, canvas,obstacleAngle) {
     const ctx = canvas.getContext("2d");
-    const SCREEN_WIDTH = ctx.canvas.width;
-    const SCREEN_HEIGHT = ctx.canvas.height;
-    // const centerX = SCREEN_WIDTH / 2 // - playerPos.x; fake camera rotation
-    // const centerY = SCREEN_HEIGHT / 2 // - playerPos.y;
-    const wallSize = (() => SCREEN_WIDTH > SCREEN_HEIGHT
-        ? SCREEN_HEIGHT * WALL_REL_SIZE
-        : SCREEN_WIDTH * WALL_REL_SIZE)();
+    const {SCREEN_WIDTH,SCREEN_HEIGHT,centerX,centerY,wallSize} = calcScreenValues(ctx)
 
-    const sx = (wallSize + playerPos.x ) / (wallSize*2 )
-    const sy = (wallSize + playerPos.y ) / (wallSize*2 )
+    const sxNoRot = (wallSize + playerPos.x ) / (wallSize*2 ) -0.5//normalised to -0.5 to 0.5
+    const syNoRot = (wallSize + playerPos.y ) / (wallSize*2 ) -0.5
+    const sDist = Math.sqrt(sxNoRot * sxNoRot + syNoRot * syNoRot)
 
-    return {sx:sx, sy:sy}
+    const sampleAngle = Math.atan2(playerPos.y,playerPos.x)-obstacleAngle
+    const sx = Math.cos(sampleAngle) *sDist +0.5
+    const sy = Math.sin(sampleAngle) *sDist +0.5
+
+    return {sx: sx, sy: sy}
 }
 
-export function isPixelTransparent(imageName, playerPos,distance,mainCanvas) {
+export function isPixelTransparent(imageName, playerPos,mainCanvas,angle) {
     const img = getImage(imageName);
 
     const canvas = document.createElement("canvas");
@@ -252,7 +253,7 @@ export function isPixelTransparent(imageName, playerPos,distance,mainCanvas) {
 
     canvas.width = 1;
     canvas.height = 1;
-    const {sx,sy} = calcImageSampleXYFromPlayerPos(playerPos, mainCanvas)
+    const {sx,sy} = calcImageSampleXYFromPlayerPos(playerPos, mainCanvas,angle)
     const x = Math.floor(sx * img.width);
     const y = Math.floor(sy * img.height);
 
