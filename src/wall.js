@@ -21,29 +21,15 @@ export default class Wall {
 
 }
 
-export function buildWalls(currentDistance, maxDistance, minSpacing, MaxSpacing,rotSpacing, seed) {
+export function buildWalls(currentDistance, maxDistance, minSpacing, MaxSpacing,colour, rotSpacing) {
     let angle = 0, rotSpeed = 0, shape = SHAPES.CIRCLE;
     let distance = currentDistance;
     let walls = []
 
-    const SWITCHTABLESIZE = 2;
-    let random = Math.floor(Math.random() * SWITCHTABLESIZE)
-    let savedRandomNamedColour = randomNamedColor();
-    if (seed) {
-        random = seed;
-    }
     while (distance < maxDistance) {
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
-        switch (random) {
-            case 0:
-                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(),pickRandomStyle(),  shape))
-                break;
-            default:
-                walls.push(new Wall(distance, angle, rotSpeed, null, randomNamedColor(),pickRandomStyle(), shape))
-                break;
-        }
-
+        walls.push(new Wall(distance, angle, rotSpeed, null, colour,pickRandomStyle(), shape))
     }
     return walls
 }

@@ -2,7 +2,7 @@
 
 import controller from "./controller.js";
 import {initCanvas, renderFrame,calculateMaxPlayerDist,isPixelTransparent} from "./view.js";
-import {linkedList} from "./utils.js";
+import {linkedList, randomNamedColor} from "./utils.js";
 import Wall, {buildWalls} from "./wall.js";
 import Obstacle, {buildObstacles} from "./obstacle.js";
 import {GAME_TICK_RATE, MAX_DIST} from "./config.js";
@@ -16,10 +16,16 @@ let walls = new linkedList()
 let obstacles = new linkedList()
 let speed = 1; //[m/s]
 let acceleration =1; //[m/s^2]
+let totalDistance = 0;
 let coins = 0;
+let lost = false;
+
+let colour = randomNamedColor()
+let nextColourChange = 10*speed;
 
 
 function gameLoop() {
+    if(lost) return;
     if(hasCrashedIntoObstacle(playerPos,obstacles)){
         loseGame();
         return;
@@ -28,30 +34,37 @@ function gameLoop() {
         collectCoins(obstacles)
         const furthestWall = clearPassedWalls(walls);
         const furthestObstacle = clearPassedWalls(obstacles);
+        totalDistance += speed/GAME_TICK_RATE;
         speed += acceleration/GAME_TICK_RATE;
+
+        if(totalDistance > nextColourChange){
+            colour = randomNamedColor()
+        }
 
 
         if(furthestWall === 0 || !furthestWall){
-            buildWalls(0,1,speed*0.3,speed*1,speed*0.01)
+            buildWalls(0,1,speed*0.3,speed*1,colour,speed*0.01)
                 .forEach(wall => walls.put(wall))
-            buildWalls(0,speed,speed*0.3,speed*1,speed*0.01)
+            buildWalls(0,speed,speed*0.3,speed*1,colour,speed*0.01)
                 .forEach(wall => walls.put(wall))
-            buildWalls(0,speed*4,10,15,speed*0.01)
+            buildWalls(0,speed*4,10,15,colour,speed*0.01)
                 .forEach(wall => walls.put(wall))
         }
         else {
-            buildWalls(furthestWall, MAX_DIST, 10,15, 0)
+            buildWalls(furthestWall, MAX_DIST, 10,15, colour,0)
                 .forEach(wall => walls.put(wall))
         }
 
         if(furthestObstacle === 0 || !furthestObstacle){
-            buildObstacles(speed*3,speed*6,speed*3,speed*5,speed*0.01)
+            buildObstacles(speed*3,speed*12,speed*3,speed*5,speed*0.01,colour)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
         else {
-            buildObstacles(furthestObstacle+speed*2,  MAX_DIST, 3 , 15, 0)
+            buildObstacles(furthestObstacle+speed*2,  MAX_DIST, 3 , 15, 0,colour)
                 .forEach(obstacle => obstacles.put(obstacle))
         }
+
+        console.log("obstacles: " + countList(obstacles))
     }
 }
 
@@ -63,6 +76,7 @@ function loseGame(){
     console.log("you lose")
     speed = 0;
     acceleration = 0;
+    lost = true;
 }
 
 function clearPassedWalls(wallsList){

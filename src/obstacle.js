@@ -17,23 +17,19 @@ export default class Obstacle{
 
 }
 
-export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpacing,rotSpacing, seed) {
+export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpacing,rotSpacing,colour) {
     let angle = 0, rotSpeed = 0, shape = SHAPES.CIRCLE;
     let distance = currentDistance;
+    distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
+
     let obstacles = []
 
-    let random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
-    if (seed) {
-        random = seed;
-    }
     while (distance < maxDistance) {
-        distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
         angle += rotSpacing;
-        random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
-        const colour = "-"+randomNamedColor()
-
-        obstacles.push(new Obstacle(distance, angle, rotSpeed, OBSTACLE_TYPES[random]+colour+fileType, shape))
-
+        const random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
+        obstacles.push(new Obstacle(distance, angle, rotSpeed, OBSTACLE_TYPES[random]+"-"+colour+fileType, shape))
+        distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
+        console.log("test")
     }
     return obstacles
 }
