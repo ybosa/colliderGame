@@ -8,4 +8,4 @@ add basic ui
 change create walls and obstacles function to make it fun
 add sound
 test on mobile
-replcae color with colour
+replace color with colour

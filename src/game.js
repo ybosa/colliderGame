@@ -2,7 +2,7 @@
 
 import controller from "./controller.js";
 import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin,initImages} from "./view.js";
-import {linkedList, randomNamedColor,COLOURS} from "./utils.js";
+import {linkedList, randomNamedcolour,COLOURS} from "./utils.js";
 import Wall, { STYLES} from "./wall.js";
 import Obstacle, {coinName, fileType, OBSTACLE_TYPES} from "./obstacle.js";
 import {fileType as obstacleFiletype} from "./obstacle.js";
@@ -21,8 +21,8 @@ let totalDistance = 0;
 let coins = 0;
 let lost = false;
 
-let colour = randomNamedColor()
-let oldColour = randomNamedColor();
+let colour = randomNamedcolour()
+let oldColour = randomNamedcolour();
 let nextColourChangeDistance = 10;
 let lastWallObstacleBlockStopDist = 0;
 initImages(OBSTACLE_TYPES ,COLOURS,coinName,obstacleFiletype)
@@ -59,7 +59,7 @@ function gameLoop() {
         //change colour, set new colour, change distance
         if(nextColourChangeDistance <= MAX_RENDER_DIST){
             oldColour = colour;
-            colour = randomNamedColor();
+            colour = randomNamedcolour();
             nextColourChangeDistance += 20;
         }
 

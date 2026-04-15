@@ -1,4 +1,3 @@
-import {randomNamedColor} from "./utils.js";
 
 export default class Wall {
     constructor(distance, angle, rotSpeed,colour,style) {

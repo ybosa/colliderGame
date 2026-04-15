@@ -61,10 +61,10 @@ export class linkedList{
 
 }
 
-export function randomNamedColor() {
-    const colors = COLOURS;
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
+export function randomNamedcolour() {
+    const colours = COLOURS;
+    const randomIndex = Math.floor(Math.random() * colours.length);
+    return colours[randomIndex];
 }
 
 
