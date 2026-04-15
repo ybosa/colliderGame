@@ -1,9 +1,9 @@
 export default class Obstacle{
-    constructor(distance, angle, rotSpeed, imgName,type,coins) {
+    constructor(distance, angle, rotSpeed, colour, type,coins) {
         this.distance = distance;
         this.angle = angle;
         this.rotSpeed = rotSpeed;
-        this.imgName = imgName;
+        this.imgName = type.fileName+"-"+colour+fileType
         this.type = type;
         this.addCoins(coins)
         this.coinImgName = coinName + fileType;
@@ -38,6 +38,13 @@ export default class Obstacle{
         }
 
     }
+}
+
+export function randomObstacleType(){
+    const keys = Object.keys(OBSTACLE_TYPES);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    const type = OBSTACLE_TYPES[randomKey]
+    return type
 }
 
 export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpacing,rotSpacing,colour) {

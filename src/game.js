@@ -4,7 +4,7 @@ import controller from "./controller.js";
 import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin,initImages} from "./view.js";
 import {linkedList, randomNamedcolour,COLOURS} from "./utils.js";
 import Wall, { STYLES} from "./wall.js";
-import Obstacle, {coinName, fileType, OBSTACLE_TYPES} from "./obstacle.js";
+import Obstacle, {coinName, fileType, OBSTACLE_TYPES, randomObstacleType} from "./obstacle.js";
 import {fileType as obstacleFiletype} from "./obstacle.js";
 import {GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
 
@@ -38,7 +38,7 @@ function gameLoop() {
         //process logic around movement, animation and coins
         collectCoins(obstacles)
         clearPassed(walls);
-        clearPassed(obstacles);
+        let previousObstacleDist =clearPassed(obstacles);
         totalDistance += speed/GAME_TICK_RATE;
         speed += acceleration/GAME_TICK_RATE;
 
@@ -53,7 +53,7 @@ function gameLoop() {
         let stopDist = Math.min(nextColourChangeDistance,MAX_RENDER_DIST)
 
         newWalls.push(...createWallsForAColourBlock(startDist,stopDist,colour))
-        newObstacles.push(...createObstaclesForAColourBlock(startDist,stopDist,colour))
+        newObstacles.push(...createObstaclesForAColourBlock(startDist,stopDist,colour,previousObstacleDist))
 
 
         //change colour, set new colour, change distance
@@ -77,27 +77,57 @@ function gameLoop() {
 function createWallsForAColourBlock(startDist,StopDist,colour){
     if(StopDist > MAX_RENDER_DIST) StopDist = MAX_RENDER_DIST;
     if(startDist >= StopDist) return [];
-    const random = Math.random()
     let newWalls = []
 
-    if(random < 10.5){
+    let angle = Math.random()*2*Math.PI;
+    let rotSpeed = 0;
+    //make it spin
+    if(Math.random() < 0.15) rotSpeed = Math.random()*0.25;
+    else if(Math.random() < 0.3) rotSpeed = Math.random()* -0.25;
+
+    //pick wall style
+    const random = Math.random()
+    if(random <0.5){
+        const nWalls = Math.floor((StopDist - startDist)/5) +1
+        for(let i = 0; i < nWalls; i++){
+            const wallStyle = (Math.random() < 0.75) ? STYLES.EqualAlternating12 : STYLES.EqualAlternating6
+            newWalls.push(new Wall(startDist + i * (StopDist - startDist)/nWalls,angle,rotSpeed,colour,wallStyle))
+        }
+    }
+    else if(random < 0.85){
+        const stylerand = Math.random()
+        const halfPoint = (startDist + StopDist)/2
+        newWalls.push(new Wall(halfPoint,angle,rotSpeed,colour,(stylerand < 0.5) ? STYLES.EqualAlternating12 : STYLES.EqualAlternating6))
+        newWalls.push(new Wall(StopDist,angle,rotSpeed,colour,(stylerand > 0.5) ? STYLES.EqualAlternating12 : STYLES.EqualAlternating6))
+    }
+    else{
         const wallStyle = (Math.random() < 0.5) ? STYLES.EqualAlternating12 : STYLES.EqualAlternating6
-        newWalls.push(new Wall(StopDist,Math.random()*2*Math.PI,0,colour,wallStyle))
+        const nWalls = Math.floor((StopDist - startDist)/10) +10
+        for(let i = 0; i < nWalls; i++){
+            if(i%3 === 1 && i < nWalls-1){
+                newWalls.push(new Wall(startDist + i * (StopDist - startDist)/nWalls,angle,rotSpeed,colour,STYLES.SOLID))
+            }
+            else
+                newWalls.push(new Wall(startDist + i * (StopDist - startDist)/nWalls,angle,rotSpeed,colour,wallStyle))
+        }
     }
     return newWalls;
 }
 
-function createObstaclesForAColourBlock(startDist,StopDist,colour){
+function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstacleDist){
     if(StopDist > MAX_RENDER_DIST) StopDist = MAX_RENDER_DIST;
     if(startDist >= StopDist) return [];
-    const random = Math.random()
+    const coins = Math.round( 15 * Math.random() -10);
     let newObjects = []
+    const minSpacing = speed + 10
+    startDist = Math.max(startDist,previousObstacleDist+minSpacing)
+    if(startDist >= StopDist) return [];
 
-
-    if(random < 10.5){
-        const obstacleType = OBSTACLE_TYPES.cross
-        newObjects.push(new Obstacle(StopDist, 0, 0, obstacleType.fileName+"-"+colour+fileType, obstacleType,9))
-    }
+    const switchTableSize = 10;
+    const pick = Math.floor(Math.random()*switchTableSize)
+    let nObstacles = Math.floor ((StopDist - startDist)/minSpacing);
+    console.log("nObstacles: " +nObstacles)
+   newObjects.push(new Obstacle(startDist,0,0,colour,OBSTACLE_TYPES.fourCorner,0))
 
     return newObjects;
 }
