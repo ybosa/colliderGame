@@ -28,6 +28,25 @@ class Controller{
             }
         });
 
+        canvas.addEventListener("touchmove", function (event) {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const movementX = touch.pageX - (touch.previousPageX || touch.pageX);
+                const movementY = touch.pageY - (touch.previousPageY || touch.pageY);
+                touch.previousPageX = touch.pageX;
+                touch.previousPageY = touch.pageY;
+
+                playerPos.x += movementX * SENSITIVITY;
+                playerPos.y += movementY * SENSITIVITY;
+
+                const dist = Math.sqrt(playerPos.x * playerPos.x + playerPos.y * playerPos.y)
+                if (dist > MaxDist * CLOSEST_REL_WALL_DIST) {
+                    playerPos.x = playerPos.x / dist * MaxDist * CLOSEST_REL_WALL_DIST;
+                    playerPos.y = playerPos.y / dist * MaxDist * CLOSEST_REL_WALL_DIST;
+                }
+            }
+        });
+
 
     }
 }

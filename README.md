@@ -1,0 +1,1 @@
+Open this link to play https://raw.githack.com/ybosa/colliderGame/main/index.html
