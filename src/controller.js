@@ -28,23 +28,34 @@ class Controller{
             }
         });
 
-        canvas.addEventListener("touchmove", function (event) {
+        let initialTouch = null;
+
+        canvas.addEventListener("touchstart", function (event) {
             if (event.touches.length === 1) {
-                const touch = event.touches[0];
-                const movementX = touch.pageX - (touch.previousPageX || touch.pageX);
-                const movementY = touch.pageY - (touch.previousPageY || touch.pageY);
-                touch.previousPageX = touch.pageX;
-                touch.previousPageY = touch.pageY;
+                initialTouch = {x: event.touches[0].clientX, y: event.touches[0].clientY};
+            }
+        });
 
-                playerPos.x += movementX * SENSITIVITY;
-                playerPos.y += movementY * SENSITIVITY;
+        canvas.addEventListener("touchmove", function (event) {
+            if (event.touches.length === 1 && initialTouch) {
+                const deltaX = event.touches[0].clientX - initialTouch.x;
+                const deltaY = event.touches[0].clientY - initialTouch.y;
 
-                const dist = Math.sqrt(playerPos.x * playerPos.x + playerPos.y * playerPos.y)
+                playerPos.x += deltaX * SENSITIVITY;
+                playerPos.y += deltaY * SENSITIVITY;
+
+                const dist = Math.sqrt(playerPos.x * playerPos.x + playerPos.y * playerPos.y);
                 if (dist > MaxDist * CLOSEST_REL_WALL_DIST) {
                     playerPos.x = playerPos.x / dist * MaxDist * CLOSEST_REL_WALL_DIST;
                     playerPos.y = playerPos.y / dist * MaxDist * CLOSEST_REL_WALL_DIST;
                 }
+
+                initialTouch = {x: event.touches[0].clientX, y: event.touches[0].clientY};
             }
+        });
+
+        canvas.addEventListener("touchend", function () {
+            initialTouch = null;
         });
 
 
