@@ -6,7 +6,7 @@ export default class Obstacle{
         this.imgName = imgName;
         this.type = type;
         this.addCoins(coins)
-        this.coinImgName = "coin" + fileType;
+        this.coinImgName = coinName + fileType;
     }
 
     comparator(elementToAdd, existingElement) {
@@ -59,7 +59,7 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
     return obstacles
 }
 
-const OBSTACLE_TYPES = {
+export const OBSTACLE_TYPES = {
     oneCorner: {
         fileName: "1corner",
         coinPositions: [{x:0.2125,y:0.2125}],
@@ -89,4 +89,5 @@ const OBSTACLE_TYPES = {
         coinPositions: [{x:0.5,y:0.5},{x:0.333,y:0.5},{x:0.5,y:0.333},{x:0.666,y:0.5},{x:0.5,y:0.667}],
     }
 }
-const fileType = ".png"
+export const fileType = ".png"
+export const coinName = "coin"

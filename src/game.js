@@ -1,10 +1,11 @@
 "use strict"
 
 import controller from "./controller.js";
-import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin} from "./view.js";
-import {linkedList, randomNamedColor} from "./utils.js";
+import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin,initImages} from "./view.js";
+import {linkedList, randomNamedColor,COLOURS} from "./utils.js";
 import Wall, {buildWalls} from "./wall.js";
-import Obstacle, {buildObstacles} from "./obstacle.js";
+import Obstacle, {buildObstacles, coinName, OBSTACLE_TYPES} from "./obstacle.js";
+import {fileType as obstacleFiletype} from "./obstacle.js";
 import {GAME_TICK_RATE, MAX_DIST} from "./config.js";
 
 const playerPos = { x: 0, y: 0}
@@ -22,6 +23,7 @@ let lost = false;
 
 let colour = randomNamedColor()
 let nextColourChange = 10*speed;
+initImages(OBSTACLE_TYPES ,COLOURS,coinName,obstacleFiletype)
 
 
 function gameLoop() {

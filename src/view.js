@@ -1,6 +1,7 @@
 import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD,DETAIL_THRESHOLD,WALL_LINE_WIDTH,WALL_ARC_LINE_SCALING_WIDTH,COIN_REL_SIZE} from "./config.js";
 import {COLOUR_PALETTE} from "./utils.js"
 import {STYLES} from "./wall.js";
+import {OBSTACLE_TYPES} from "./obstacle.js";
 
 let imageSet = new Set();
 let missingIMGSet = new Set();
@@ -340,4 +341,16 @@ function initMissingIMG() {
     const loadIMG = new Image();
     loadIMG.src = canvas.toDataURL("image/png");
     imageSet[missingImgName] = loadIMG;
+}
+
+export function initImages(Obstacle_Types,Colours,CoinName,filetype){
+    console.log(Obstacle_Types)
+    const obsTypes = Object.keys(OBSTACLE_TYPES).map((key)=> OBSTACLE_TYPES[key])
+    for(let type of obsTypes){
+        for(let colour of Colours){
+            const typeName = type.fileName
+            getImage(typeName+"-"+colour+filetype)
+        }
+    }
+    getImage(CoinName+filetype)
 }
