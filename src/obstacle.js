@@ -1,24 +1,47 @@
-import {SHAPES} from "./config.js";
-import {randomNamedColor} from "./utils.js";
-
 export default class Obstacle{
-    constructor(distance, angle, rotSpeed, imgName,shape,coins) {
+    constructor(distance, angle, rotSpeed, imgName,type,coins) {
         this.distance = distance;
         this.angle = angle;
         this.rotSpeed = rotSpeed;
         this.imgName = imgName;
-        this.coins = coins;
-        this.shape = shape;
+        this.type = type;
+        this.addCoins(coins)
+        this.coinImgName = "coin" + fileType;
     }
 
     comparator(elementToAdd, existingElement) {
         return elementToAdd.distance > existingElement.distance; //back to front rendering
     }
 
+    addCoins(Coins){
+        this.coins = [];
+        if(!Coins) return;
+        if(Coins instanceof Array){
+            for(let i = 0; i < Coins.length; i++){
+                if(Coins[i]) {
+                    const posX = this.type.coinPositions[i].x
+                    const posY = this.type.coinPositions[i].y
+                    this.coins.push({x:posX,y:posY,value:1})
+                }
+            }
+        }
+        else if(Number.isInteger(Coins)){
+            for (let i = 0; i < this.type.coinPositions.length; i++) {
+                const posX = this.type.coinPositions[i].x
+                const posY = this.type.coinPositions[i].y
+                if(Coins > 0){
+                    this.coins.push({x:posX,y:posY,value:1})
+                    Coins--;
+                }
+                else break;
+            }
+        }
+
+    }
 }
 
 export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpacing,rotSpacing,colour) {
-    let angle = 0, rotSpeed = 0, shape = SHAPES.CIRCLE;
+    let angle = 0, rotSpeed = 0;
     let distance = currentDistance;
     distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
 
@@ -26,13 +49,44 @@ export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpac
 
     while (distance < maxDistance) {
         angle += rotSpacing;
-        const random = Math.floor(Math.random() * OBSTACLE_TYPES.length)
-        obstacles.push(new Obstacle(distance, angle, rotSpeed, OBSTACLE_TYPES[random]+"-"+colour+fileType, shape))
+        const keys = Object.keys(OBSTACLE_TYPES);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const type = OBSTACLE_TYPES[randomKey]
+        const typeName = OBSTACLE_TYPES[randomKey].fileName
+        obstacles.push(new Obstacle(distance, 0, rotSpeed, typeName+"-"+colour+fileType, type,9))
         distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
-        console.log("test")
     }
     return obstacles
 }
 
-const OBSTACLE_TYPES = ["1corner","1hole","2corner","2hole","4corners","4hole","cross"]
+const OBSTACLE_TYPES = {
+    oneCorner: {
+        fileName: "1corner",
+        coinPositions: [{x:0.2125,y:0.2125}],
+    },
+    oneHole:{
+        fileName: "1hole",
+        coinPositions: [{x:0.5,y:0.15}],
+    },
+    twoCorner: {
+        fileName: "2corner",
+        coinPositions: [{x:0.2125,y:0.2125},{x:0.7875,y:0.2125}],
+    },
+    twoHole:{
+        fileName:"2hole",
+        coinPositions: [{x:0.5,y:0.15},{x:0.5,y:0.875}],
+    },
+    fourHole:{
+        fileName:"4hole",
+        coinPositions: [{x:0.5,y:0.15},{x:0.875,y:0.5},{x:0.5,y:0.875},{x:0.15,y:0.5}],
+    },
+    fourCorner:{
+        fileName: "4corners",
+        coinPositions: [{x:0.2125,y:0.2125},{x:0.7875,y:0.2125},{x:0.7875,y:0.7875},{x:0.2125,y:0.7875}],
+    },
+    cross:{
+        fileName: "cross",
+        coinPositions: [{x:0.5,y:0.5},{x:0.333,y:0.5},{x:0.5,y:0.333},{x:0.666,y:0.5},{x:0.5,y:0.667}],
+    }
+}
 const fileType = ".png"

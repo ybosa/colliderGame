@@ -14,6 +14,7 @@ export const MAX_DIST = 200; // Max distance from player to render [m]
 export const DETAIL_THRESHOLD = 5//Smallest width view will bother to render details in walls [pixels]
 export const WALL_LINE_WIDTH = 3;
 export const WALL_ARC_LINE_SCALING_WIDTH = 15;
+export const COIN_REL_SIZE = 0.065
 
 export const SHAPES = {
     // SQUARE: "square",  Not yet implemented

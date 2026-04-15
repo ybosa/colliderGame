@@ -1,7 +1,7 @@
 "use strict"
 
 import controller from "./controller.js";
-import {initCanvas, renderFrame,calculateMaxPlayerDist,isPixelTransparent} from "./view.js";
+import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin} from "./view.js";
 import {linkedList, randomNamedColor} from "./utils.js";
 import Wall, {buildWalls} from "./wall.js";
 import Obstacle, {buildObstacles} from "./obstacle.js";
@@ -69,7 +69,18 @@ function gameLoop() {
 }
 
 function collectCoins(obstacles){
-
+    obstacles.forEach(obstacle => {
+        if(obstacle.distance <= 0 || obstacle.distance >= speed/GAME_TICK_RATE) {
+            return;
+        }
+        if(!obstacle.coins){
+            return;
+        }
+        else if(hasCollectedCoin(playerPos,canvas,obstacle.angle,obstacle.coins)){
+            coins++;
+            console.log("coins: "+coins)
+        }
+    })
 }
 
 function loseGame(){

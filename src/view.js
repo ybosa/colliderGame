@@ -1,4 +1,4 @@
-import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD,DETAIL_THRESHOLD,WALL_LINE_WIDTH,WALL_ARC_LINE_SCALING_WIDTH} from "./config.js";
+import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD,DETAIL_THRESHOLD,WALL_LINE_WIDTH,WALL_ARC_LINE_SCALING_WIDTH,COIN_REL_SIZE} from "./config.js";
 import {COLOUR_PALETTE} from "./utils.js"
 import {STYLES} from "./wall.js";
 
@@ -212,14 +212,19 @@ function renderObstacles(obstacles,ctx,playerPos){
         let size = obstacleSize / obstacle.distance;
         if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
 
-        if (obstacle.imgName) {
-            const img = getImage(obstacle.imgName);
-            ctx.save();
-            ctx.translate(centerX - playerPos.x / obstacle.distance, centerY - playerPos.y / obstacle.distance);
-            ctx.rotate(obstacle.angle);
-            ctx.drawImage(img, -size, -size, size * 2, size * 2);
-            ctx.restore();
-        }
+        const img = getImage(obstacle.imgName);
+        ctx.save();
+        ctx.translate(centerX - playerPos.x / obstacle.distance, centerY - playerPos.y / obstacle.distance);
+        ctx.rotate(obstacle.angle);
+        ctx.drawImage(img, -size, -size, size * 2, size * 2);
+
+        obstacle.coins.forEach(coin => {
+            ctx.drawImage(getImage(obstacle.coinImgName),
+                coin.x * size * 2 - size * COIN_REL_SIZE - size, coin.y * size * 2 - size * COIN_REL_SIZE - size
+                ,size * 2 * COIN_REL_SIZE,size * 2 * COIN_REL_SIZE)
+        })
+
+        ctx.restore();
     })
     ctx.restore();
 }
@@ -264,6 +269,16 @@ export function isPixelTransparent(imageName, playerPos,mainCanvas,angle) {
 
     const alpha = pixelData[3]; // RGBA → index 3 is alpha
     return alpha <= TRANSPARENCY_THRESHOLD; // true if fully transparent
+}
+
+export function hasCollectedCoin(playerPos,mainCanvas,angle,coins){
+    const {sx,sy} = calcImageSampleXYFromPlayerPos(playerPos, mainCanvas,angle)
+    for(let coin of coins){
+        if(Math.hypot(sx-coin.x,sy-coin.y)<=COIN_REL_SIZE){
+            return true
+        }
+    }
+    return false
 }
 
 
