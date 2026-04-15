@@ -1,13 +1,11 @@
 ##add link to play in a readme
-#compress images so they can load on webpages
-add a preload all images function
+##compress images so they can load on webpages
+##add a preload all images function
 add basic ui
     add sensitivity slider
         set sensitivity based on if mobile or desktop
 ##add touch controls
 change create walls and obstacles function to make it fun
 add sound
-
-
-
-
+test on mobile
+replcae color with colour
