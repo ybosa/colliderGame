@@ -2,7 +2,7 @@
 import {DEBUGVARS, DEBUG_MODE,SENSITIVITY,CLOSEST_REL_WALL_DIST} from "./config.js";
 
 class Controller{
-    constructor(playerPos, canvas,MaxDist) {
+    constructor(playerPos, canvas,MaxDist,cacheImageTransparency) {
         canvas.addEventListener("click", () => {
             canvas.requestPointerLock();
         });
@@ -10,6 +10,10 @@ class Controller{
         document.addEventListener("keydown", (e) => {
             if (e.key === "i") {
                 DEBUGVARS.setDebugMode(!DEBUG_MODE)
+            }
+            if(e.key === "c" && DEBUG_MODE){
+                console.log("caching image transparency")
+                cacheImageTransparency()
             }
         });
 

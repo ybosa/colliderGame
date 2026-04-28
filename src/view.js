@@ -366,3 +366,92 @@ export function initImages(Obstacle_Types,Colours,CoinName,filetype){
     }
     getImage(CoinName+filetype)
 }
+
+export function cacheImageTransparency() {
+    if(!DEBUG_MODE) return;
+    const ret = {}
+    console.log("Caching transparency for " + imageSet.size + " images")
+    console.log(imageSet)
+    let count = 0
+    Object.keys(imageSet).forEach(imageName => {
+        // if(count>1) return;
+        console.log("Caching transparency for " + imageName)
+        const image = getImage(imageName)
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image,0,0);
+
+        const centerX = Math.floor(image.width / 2);
+        const centerY = Math.floor(image.height / 2);
+
+        let data = {}
+        // Image transparency caching logic goes here
+        const imageData = ctx.getImageData(0, 0, image.width, image.height).data;
+        for (let y = 0; y < image.height; y++) {
+            let rowHasTransparent = false;
+            let lastPxWasTransparent = false;
+            const row = [];
+            let transparentPairStart =-1;
+            let lastTransparentFound = -1;
+            for (let x = 0; x < image.width; x++) {
+                let alpha = imageData[(y * image.width + x) * 4 + 3];
+
+                //assuming images are square and we can ignore pixels outside the circular area
+                //then you can remove transparent cache data outside the circle by pretending alpha isnt transparent
+                const dist = Math.hypot(x - centerX, y - centerY);
+                if (dist > Math.floor(image.width / 2) && image.width === image.height ){
+                    alpha = 255
+                }
+
+                //if not currently in a transparent block
+                if(!lastPxWasTransparent){
+                    //current pixel is transparent
+                    if(alpha<=TRANSPARENCY_THRESHOLD){
+                        lastPxWasTransparent = true;
+                        rowHasTransparent = true;
+                        transparentPairStart = x;
+                        lastTransparentFound = x;
+                    }
+                    else {
+                        continue
+                    }
+                }
+                //currently in a transparent block
+                else {
+                    //if still transparent
+                    if(alpha<=TRANSPARENCY_THRESHOLD){
+                        lastTransparentFound = x;
+                    }
+                    //if no longer transparent
+                    else{
+                        const pair = [transparentPairStart,lastTransparentFound]
+                        row.push(pair)
+                        lastPxWasTransparent = false;
+                    }
+
+                }
+            }
+
+            if(rowHasTransparent){
+                data[y] = row
+            }
+        }
+        ret[imageName] = data
+        count++
+    });
+
+    console.log(ret)
+
+    // Create JSON file and trigger download
+    const jsonBlob = new Blob([JSON.stringify(ret, null, 2)], {type: "application/json"});
+    const downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    downloadLink.style.display = "none";
+    downloadLink.href = URL.createObjectURL(jsonBlob);
+    downloadLink.download = "imageTransparencyCache.json";
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+}

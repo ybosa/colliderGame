@@ -1,7 +1,7 @@
 "use strict"
 
 import controller from "./controller.js";
-import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin,initImages} from "./view.js";
+import {initCanvas, renderFrame, calculateMaxPlayerDist, isPixelTransparent, hasCollectedCoin,initImages,cacheImageTransparency} from "./view.js";
 import {linkedList, randomNamedcolour,COLOURS} from "./utils.js";
 import Wall, { STYLES} from "./wall.js";
 import Obstacle, {coinName, fileType, OBSTACLE_TYPES, randomObstacleType} from "./obstacle.js";
@@ -11,7 +11,7 @@ import {GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
 const playerPos = { x: 0, y: 0}
 const canvas = initCanvas()
 const MaxDist = calculateMaxPlayerDist( canvas)
-const Controller = new controller(playerPos, canvas,MaxDist)
+const Controller = new controller(playerPos, canvas,MaxDist,cacheImageTransparency)
 
 let walls = new linkedList()
 let obstacles = new linkedList()
