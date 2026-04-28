@@ -6,7 +6,7 @@ import {linkedList, randomNamedcolour,COLOURS} from "./utils.js";
 import Wall, { STYLES} from "./wall.js";
 import Obstacle, {coinName, fileType, OBSTACLE_TYPES, randomObstacleType} from "./obstacle.js";
 import {fileType as obstacleFiletype} from "./obstacle.js";
-import {GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
+import {DEBUG_MODE, GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
 
 const playerPos = { x: 0, y: 0}
 const canvas = initCanvas()
@@ -255,10 +255,11 @@ let count = 0
 function displayFPS(){
     count++
     if(Date.now() - time > 1000){
-        console.log("fps: "+count)
-        console.log("walls: " + countList(walls))
-        console.log("obstacles: " + countList(obstacles))
-
+        if(DEBUG_MODE) {
+            console.log("fps: " + count)
+            console.log("walls: " + countList(walls))
+            console.log("obstacles: " + countList(obstacles))
+        }
         count = 0
         time = Date.now()
     }

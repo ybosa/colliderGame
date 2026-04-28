@@ -13,6 +13,8 @@ import {COLOUR_PALETTE} from "./utils.js"
 import {STYLES} from "./wall.js";
 import {OBSTACLE_TYPES} from "./obstacle.js";
 
+import transparencyCache from "../images/imageTransparencyCache.json" with { type: 'json' };
+
 let imageSet = new Set();
 let missingIMGSet = new Set();
 let missingImgName = "missing.png"
@@ -265,23 +267,21 @@ function calcImageSampleXYFromPlayerPos(playerPos, canvas,obstacleAngle) {
 
 export function isPixelTransparent(imageName, playerPos,mainCanvas,angle) {
     const img = getImage(imageName);
+    const transparencyData = transparencyCache[imageName]
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = 1;
-    canvas.height = 1;
     const {sx,sy} = calcImageSampleXYFromPlayerPos(playerPos, mainCanvas,angle)
     const x = Math.floor(sx * img.width);
-    const y = Math.floor(sy * img.height);
+    const y = Math.floor(sy * img.height).toString()
 
-
-    ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1);
-
-    const pixelData = ctx.getImageData(0, 0, 1, 1).data;
-
-    const alpha = pixelData[3]; // RGBA → index 3 is alpha
-    return alpha <= TRANSPARENCY_THRESHOLD; // true if fully transparent
+    if(transparencyData[y]){
+        const row = transparencyData[y]
+        for(let pair of row){
+            const start = pair[0]
+            const end = pair[1]
+            if(x >= start && x <= end) return true
+        }
+    }
+    return false
 }
 
 export function hasCollectedCoin(playerPos,mainCanvas,angle,coins){
@@ -356,7 +356,6 @@ function initMissingIMG() {
 }
 
 export function initImages(Obstacle_Types,Colours,CoinName,filetype){
-    console.log(Obstacle_Types)
     const obsTypes = Object.keys(OBSTACLE_TYPES).map((key)=> OBSTACLE_TYPES[key])
     for(let type of obsTypes){
         for(let colour of Colours){
@@ -371,7 +370,6 @@ export function cacheImageTransparency() {
     if(!DEBUG_MODE) return;
     const ret = {}
     console.log("Caching transparency for " + imageSet.size + " images")
-    console.log(imageSet)
     let count = 0
     Object.keys(imageSet).forEach(imageName => {
         // if(count>1) return;
