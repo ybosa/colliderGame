@@ -2,7 +2,8 @@
 
 export const GAME_TICK_RATE = 100;//[hz] physics/ game logic calculations per second
 export const SCREEN_TICK_RATE = 30;//[hz] screen redraws per second
-export const SENSITIVITY = 1;
+export let SENSITIVITY = 1;
+export function setSensitivityConfig(sensitivity){SENSITIVITY = sensitivity}
 
 export let DEBUG_MODE = false
 export const IMAGE_PATH = "./images/"

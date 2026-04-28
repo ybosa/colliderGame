@@ -9,6 +9,67 @@
 <script type="module">
     import {startGame} from './src/game.js';
     import {setGraphics} from './src/game.js';
+    import {setSensitivity} from './src/game.js';
+
+    function highlightGraphicsButton(level) {
+        const buttons = {
+            low: document.getElementById('graphicsLowButton'),
+            medium: document.getElementById('graphicsMediumButton'),
+            high: document.getElementById('graphicsHighButton')
+        };
+
+        Object.keys(buttons).forEach(key => {
+            if (key === level) {
+                buttons[key].style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--button-selected-color');
+            } else {
+                buttons[key].style.backgroundColor = getComputedStyle(document.querySelector('.gameMenu button')).backgroundColor;
+            }
+        });
+    }
+
+    function loadCookies() {
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+            const [key, value] = cookie.split('=').map(c => c.trim());
+            acc[key] = value;
+            return acc;
+        }, {});
+
+        console.log(cookies)
+
+        if (cookies.graphics) {
+            setGraphics(cookies.graphics);
+            highlightGraphicsButton(cookies.graphics)
+        }
+        if (cookies.sensitivity) {
+            const sensitivity = parseFloat(cookies.sensitivity);
+            setSensitivity(sensitivity);
+            sensitivitySlider.value = sensitivity;
+            sensitivityValue.textContent = sensitivity;
+        }
+    }
+
+
+    function applyDefaultSettings() {
+        if (!document.cookie.includes('graphics')) {
+            setCookie('graphics', 'medium');
+        }
+
+        if (!document.cookie.includes('sensitivity')) {
+            setCookie('sensitivity', 1);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        applyDefaultSettings();
+        loadCookies();
+    });
+
+    function setCookie(fieldName, value) {
+        document.cookie = `${fieldName}=${value}; path=/`;
+    }
+
+
+
 
     document.getElementById('playButton').addEventListener('click', () => {
         document.getElementById('gameMenu').style.display = 'none';
@@ -22,15 +83,34 @@
 
     document.getElementById('graphicsLowButton').addEventListener('click', () => {
         setGraphics('low');
+        setCookie('graphics', 'low');
+        highlightGraphicsButton('low');
     });
 
     document.getElementById('graphicsMediumButton').addEventListener('click', () => {
         setGraphics('medium');
+        setCookie('graphics', 'medium');
+        highlightGraphicsButton('medium');
     });
 
     document.getElementById('graphicsHighButton').addEventListener('click', () => {
         setGraphics('high');
+        setCookie('graphics', 'high');
+        highlightGraphicsButton('high');
     });
+
+    const sensitivitySlider = document.getElementById('sensitivitySlider');
+    const sensitivityValue = document.getElementById('sensitivityValue');
+
+    sensitivitySlider.addEventListener('input', () => {
+        sensitivityValue.textContent = sensitivitySlider.value;
+    });
+
+    sensitivitySlider.addEventListener('change', () => {
+        setSensitivity(parseFloat(sensitivitySlider.value));
+        setCookie('sensitivity', sensitivitySlider.value);
+    });
+
 
 
 </script>
@@ -58,14 +138,20 @@
 <div id="settingsMenu" style="display: none;" class="gameMenu">
     <H1>Settings</H1>
     <p>Graphics:</p>
-    <button id="graphicsLowButton">Low</button>
-    <button id="graphicsMediumButton">Medium</button>
-    <button id="graphicsHighButton">High</button>
+    <div style="display: flex; gap: 1vw;">
+        <button id="graphicsLowButton">Low</button>
+        <button id="graphicsMediumButton">Medium</button>
+        <button id="graphicsHighButton">High</button>
+    </div>
+    <p>Movement Sensitivity:</p>
+    <input id="sensitivitySlider" type="range" min="0.1" max="2" step="0.1" value="1"/>
+    <span id="sensitivityValue">1</span>
+
     <button onclick="document.getElementById('settingsMenu').style.display = 'none'; document.getElementById('gameMenu').style.display = 'flex';">
         Back
     </button>
-    
-    
+
+
 
 </div>
 
@@ -73,6 +159,7 @@
 <style>
     html {
         box-sizing: border-box;
+        --button-selected-color: #ff0000; /* Default color for selected buttons */
     }
 
     *, *::before, *::after {
@@ -87,9 +174,9 @@
 
     .gameMenu {
         position: absolute;
-        top: 10%;
+        top: 50%;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translate(-50%, -50%);
         background-color: rgba(0, 0, 0, 0.8);
         padding: 4vw;
         border-radius: 10px;
