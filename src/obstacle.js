@@ -1,10 +1,11 @@
 export default class Obstacle{
-    constructor(distance, angle, rotSpeed, colour, type,coins) {
+    constructor(distance, angle, rotSpeed, colour, type) {
         this.distance = distance;
         this.angle = angle;
         this.rotSpeed = rotSpeed;
         this.imgName = type.fileName+"-"+colour+fileType
         this.type = type;
+        const coins = Math.round( 15 * Math.random() -10);
         this.addCoins(coins)
         this.coinImgName = coinName + fileType;
     }
