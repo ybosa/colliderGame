@@ -1,4 +1,14 @@
-import {WALL_REL_SIZE, IMAGE_PATH, DEBUG_MODE, TRANSPARENCY_THRESHOLD,DETAIL_THRESHOLD,WALL_LINE_WIDTH,WALL_ARC_LINE_SCALING_WIDTH,COIN_REL_SIZE} from "./config.js";
+import {
+    WALL_REL_SIZE,
+    IMAGE_PATH,
+    DEBUG_MODE,
+    TRANSPARENCY_THRESHOLD,
+    DETAIL_THRESHOLD,
+    WALL_LINE_WIDTH,
+    WALL_ARC_LINE_SCALING_WIDTH,
+    COIN_REL_SIZE,
+    MAX_RENDER_DIST
+} from "./config.js";
 import {COLOUR_PALETTE} from "./utils.js"
 import {STYLES} from "./wall.js";
 import {OBSTACLE_TYPES} from "./obstacle.js";
@@ -68,6 +78,7 @@ function renderWalls(walls,ctx,playerPos){
     walls.forEach(wall => {
         let distance = wall.distance;
         if (distance <= 0) distance = 0.001
+        if(distance > MAX_RENDER_DIST) return;
         let size = wallSize / distance;
         if (size < 0) return
         const colourPallet = COLOUR_PALETTE[wall.colour]
@@ -209,6 +220,7 @@ function renderObstacles(obstacles,ctx,playerPos){
     const obstacleSize = wallSize;
     obstacles.forEach(obstacle => {
         if (obstacle.distance <= 0) return;
+        if(obstacle.distance > MAX_RENDER_DIST) return;
         ctx.strokeStyle = "white";
         let size = obstacleSize / obstacle.distance;
         if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;
