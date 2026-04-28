@@ -13,67 +13,83 @@ const canvas = initCanvas()
 const MaxDist = calculateMaxPlayerDist( canvas)
 const Controller = new controller(playerPos, canvas,MaxDist,cacheImageTransparency)
 
-let walls = new linkedList()
-let obstacles = new linkedList()
-let speed = 1; //[m/s]
-let acceleration =0.25; //[m/s^2]
-let totalDistance = 0;
-let coins = 0;
-let lost = false;
 
-let colour = randomNamedcolour()
-let oldColour = randomNamedcolour();
-let lastColourBlockEnd = 0;
 initImages(OBSTACLE_TYPES ,COLOURS,coinName,obstacleFiletype)
+
+class GameState{
+    constructor(colour,startGame = false){
+        this.walls = new linkedList()
+        this.obstacles = new linkedList()
+        this.speed = 1; //[m/s]
+        this.acceleration =0.25; //[m/s^2]
+        this.totalDistance = 0;
+        this.coins = 0;
+        this.lost = false;
+        this.gameStarted = startGame;
+
+        if(colour) this.colour = colour;
+        else this.colour = randomNamedcolour();
+        this.oldColour = randomNamedcolour();
+        this.lastColourBlockEnd = 0;
+    }
+}
+let gameState = new GameState()
+
+
+export function startGame(){
+    gameState = new GameState(gameState.colour,true)
+    canvas.requestPointerLock();
+}
 
 
 function gameLoop() {
-    if(lost) return;
-    if(hasCrashedIntoObstacle(playerPos,obstacles)){
+    if(gameState.lost) return;
+    if(hasCrashedIntoObstacle(playerPos,gameState.obstacles)){
         loseGame();
         return;
     }
     else{
         //process logic around movement, animation and coins
-        collectCoins(obstacles)
-        let previousObstacleDist = findFurthest(obstacles) -speed/GAME_TICK_RATE;
-        walls = filterPassed(walls);
-        obstacles = filterPassed(obstacles);
+        collectCoins()
+        let previousObstacleDist = findFurthest(gameState.obstacles) -gameState.speed/GAME_TICK_RATE;
+        gameState.walls = filterPassed(gameState.walls, gameState.speed);
+        gameState.obstacles = filterPassed(gameState.obstacles, gameState.speed);
 
-        lastColourBlockEnd -= speed/GAME_TICK_RATE;
-        totalDistance += speed/GAME_TICK_RATE;
-        speed += acceleration/GAME_TICK_RATE;
+        gameState.lastColourBlockEnd -= gameState.speed/GAME_TICK_RATE;
+        gameState.totalDistance += gameState.speed/GAME_TICK_RATE;
+        gameState.speed += gameState.acceleration/GAME_TICK_RATE;
 
-        spin(walls)
-        spin(obstacles)
+        spin(gameState.walls)
+        spin(gameState.obstacles)
 
         //check if it can add a new colour block
-        if(lastColourBlockEnd <= MAX_RENDER_DIST){
+        if(gameState.lastColourBlockEnd <= MAX_RENDER_DIST){
             //new color
-            oldColour = colour;
-            colour = randomNamedcolour();
+            gameState.oldColour = gameState.colour;
+            gameState.colour = randomNamedcolour();
 
             //new walls and obstacles
             //create walls and obstacles up to colour change distance or max render dist. only do one block of walls per tick
             let newWalls = []
             let newObstacles = []
-            let startDist =lastColourBlockEnd
-            let stopDist = startDist + 20 * speed + 200 * acceleration;
+            let startDist =gameState.lastColourBlockEnd
+            let stopDist = startDist + 20 * gameState.speed + 200 * gameState.acceleration;
 
-            let obstaclePadding = speed *3 + 2;
-            if(startDist <10 ) obstaclePadding = speed *5 + 10;
+            let obstaclePadding = gameState.speed *3 + 2;
+            if(startDist <10 ) obstaclePadding = gameState.speed *5 + 10;
 
-            newWalls.push(...createWallsForAColourBlock(startDist,stopDist,colour))
-            newObstacles.push(...createObstaclesForAColourBlock(startDist + obstaclePadding,stopDist,colour,previousObstacleDist))
+            newWalls.push(...createWallsForAColourBlock(startDist,stopDist,gameState.colour))
+            newObstacles.push(...createObstaclesForAColourBlock(startDist + obstaclePadding,stopDist,gameState.colour,previousObstacleDist,gameState.speed))
 
 
 
             //append obstacles and walls to a game list
-            newWalls.forEach(wall => walls.put(wall))
-            newObstacles.forEach(obstacle => obstacles.put(obstacle))
+            newWalls.forEach(wall => gameState.walls.put(wall))
+            if(gameState.gameStarted)
+                newObstacles.forEach(obstacle => gameState.obstacles.put(obstacle))
 
             //setup vars for next time
-            lastColourBlockEnd = stopDist
+            gameState.lastColourBlockEnd = stopDist
         }
     }
 }
@@ -117,7 +133,7 @@ function createWallsForAColourBlock(startDist,StopDist,colour){
     return newWalls;
 }
 
-function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstacleDist){
+function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstacleDist,speed){
     if(startDist >= StopDist) return [];
 
     const minSpacing = 2*speed + 10
@@ -184,29 +200,29 @@ function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstac
     return newObstacles;
 }
 
-function collectCoins(obstacles){
-    obstacles.forEach(obstacle => {
-        if(obstacle.distance <= 0 || obstacle.distance >= speed/GAME_TICK_RATE) {
+function collectCoins(){
+    gameState.obstacles.forEach(obstacle => {
+        if(obstacle.distance <= 0 || obstacle.distance >= gameState.speed/GAME_TICK_RATE) {
             return;
         }
         if(!obstacle.coins){
             return;
         }
         else if(hasCollectedCoin(playerPos,canvas,obstacle.angle,obstacle.coins)){
-            coins++;
-            console.log("coins: "+coins)
+            gameState.coins++;
+            console.log("coins: "+gameState.coins)
         }
     })
 }
 
 function loseGame(){
     console.log("you lose")
-    speed = 0;
-    acceleration = 0;
-    lost = true;
+    gameState.speed = 0;
+    gameState.acceleration = 0;
+    gameState.lost = true;
 }
 
-function filterPassed(objectList){
+function filterPassed(objectList,speed){
     objectList.forEach(wall => {
         wall.distance -= speed/GAME_TICK_RATE;
     })
@@ -241,7 +257,7 @@ function countList(list){
 }
 
 function displayLoop(){
-        renderFrame(canvas, walls,obstacles,playerPos)
+        renderFrame(canvas, gameState.walls,gameState.obstacles,playerPos)
         displayFPS()
         window.requestAnimationFrame(displayLoop)
 }
@@ -257,8 +273,8 @@ function displayFPS(){
     if(Date.now() - time > 1000){
         if(DEBUG_MODE) {
             console.log("fps: " + count)
-            console.log("walls: " + countList(walls))
-            console.log("obstacles: " + countList(obstacles))
+            console.log("walls: " + countList(gameState.walls))
+            console.log("obstacles: " + countList(gameState.obstacles))
         }
         count = 0
         time = Date.now()
@@ -268,7 +284,7 @@ function displayFPS(){
 function hasCrashedIntoObstacle(playerPos,obstacles){
     let hasCrashed = false;
     obstacles.forEach(obstacle => {
-        if(obstacle.distance <= 0 || obstacle.distance >= speed/GAME_TICK_RATE) {
+        if(obstacle.distance <= 0 || obstacle.distance >= gameState.speed/GAME_TICK_RATE) {
             return;
         }
         else if(!isPixelTransparent(obstacle.imgName,playerPos,canvas,obstacle.angle)){

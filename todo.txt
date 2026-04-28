@@ -5,4 +5,5 @@ add basic ui
 add sound
 test on mobile
 add coin img
-fix CORS or generate a lookup table for all the images so cors isnt needed
+fix wall styling
+fix obstacles placed too close together

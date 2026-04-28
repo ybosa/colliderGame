@@ -6,19 +6,66 @@
     <title>Title</title>
 </head>
 <body>
-  <style>
-    html{
-      box-sizing: border-box;
+<style>
+    html {
+        box-sizing: border-box;
     }
+
     *, *::before, *::after {
-      box-sizing: inherit;
+        box-sizing: inherit;
     }
-    body{
+
+    body {
         margin: 0;
         padding: 0;
         overflow: hidden;
     }
-  </style>
-  <script type="module" src="src/game.js"></script>
+
+    #gameMenu {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 4vw;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2vw;
+        z-index: 10;
+        color: white;
+        text-align: center;
+        font-size: 1.5vw;
+        width: 30vw;
+    }
+
+    #gameMenu button {
+        background-color: #007BFF;
+        border: none;
+        color: white;
+        padding: 1vw 2vw;
+        font-size: 1.2vw;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    #gameMenu button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<script type="module">
+    import {startGame} from './src/game.js';
+
+    document.getElementById('playButton').addEventListener('click', () => {
+        document.getElementById('gameMenu').style.display = 'none';
+        startGame();
+    });
+</script>
+
+<div id="gameMenu">
+    <button id="playButton">Play</button>
+    <button id="settingsButton">Settings</button>
+</div>
+
 </body>
 </html>
