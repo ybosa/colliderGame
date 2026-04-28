@@ -7,7 +7,8 @@ import {
     WALL_LINE_WIDTH,
     WALL_ARC_LINE_SCALING_WIDTH,
     COIN_REL_SIZE,
-    MAX_RENDER_DIST
+    MAX_RENDER_DIST,
+    MAX_OBSTACLES_TO_RENDER
 } from "./config.js";
 import {COLOUR_PALETTE} from "./utils.js"
 import {STYLES} from "./wall.js";
@@ -220,9 +221,27 @@ function renderObstacles(obstacles,ctx,playerPos){
     ctx.save();
     const {SCREEN_WIDTH, SCREEN_HEIGHT, centerX, centerY, wallSize} = calcScreenValues(ctx)
     const obstacleSize = wallSize;
+
+    let obstacleCount = 0;
     obstacles.forEach(obstacle => {
+        //skip count if behind player or too far away these aren't valid to render
         if (obstacle.distance <= 0) return;
         if(obstacle.distance > MAX_RENDER_DIST) return;
+        obstacleCount++;
+    })
+
+    let count = 0;
+    obstacles.forEach(obstacle => {
+        //skip if behind player or too far away
+        if (obstacle.distance <= 0) return;
+        if(obstacle.distance > MAX_RENDER_DIST) return;
+        //back to front rendering so only render the front ones up to MAX_OBSTACLES_TO_RENDER
+        //starting from obstacleCount - MAX_OBSTACLES_TO_RENDER to obstacleCount
+        count++;
+        if(count <=  obstacleCount - MAX_OBSTACLES_TO_RENDER) {
+            return;
+        }
+
         ctx.strokeStyle = "white";
         let size = obstacleSize / obstacle.distance;
         if (size < 0) size = SCREEN_WIDTH * SCREEN_HEIGHT;

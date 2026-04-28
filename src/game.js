@@ -6,7 +6,7 @@ import {linkedList, randomNamedcolour,COLOURS} from "./utils.js";
 import Wall, { STYLES} from "./wall.js";
 import Obstacle, {coinName, fileType, OBSTACLE_TYPES, randomObstacleType} from "./obstacle.js";
 import {fileType as obstacleFiletype} from "./obstacle.js";
-import {DEBUG_MODE, GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
+import {DEBUG_MODE, GAME_TICK_RATE, MAX_RENDER_DIST,setGraphicsConfig} from "./config.js";
 import * as UI from "./ui.js";
 
 const playerPos = { x: 0, y: 0}
@@ -217,7 +217,7 @@ function collectCoins(){
 }
 
 function loseGame(){
-    UI.showLoseMenu(Number((gameState.speed).toFixed(2)* 10), gameState.coins)
+    UI.showLoseMenu(Number((gameState.speed* 10).toFixed(1)), gameState.coins)
     gameState.speed = 0;
     gameState.acceleration = 0;
     gameState.lost = true;
@@ -293,4 +293,9 @@ function hasCrashedIntoObstacle(playerPos,obstacles){
         }
     })
     return hasCrashed;
+}
+
+export function setGraphics(level){
+    console.log("setting graphics to level: " + level)
+    setGraphicsConfig(level)
 }

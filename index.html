@@ -8,6 +8,7 @@
 <body>
 <script type="module">
     import {startGame} from './src/game.js';
+    import {setGraphics} from './src/game.js';
 
     document.getElementById('playButton').addEventListener('click', () => {
         document.getElementById('gameMenu').style.display = 'none';
@@ -18,8 +19,20 @@
         document.getElementById('loseMenu').style.display = 'none';
         startGame();
     });
-    
-    
+
+    document.getElementById('graphicsLowButton').addEventListener('click', () => {
+        setGraphics('low');
+    });
+
+    document.getElementById('graphicsMediumButton').addEventListener('click', () => {
+        setGraphics('medium');
+    });
+
+    document.getElementById('graphicsHighButton').addEventListener('click', () => {
+        setGraphics('high');
+    });
+
+
 </script>
 
 <div id="gameMenu" class="gameMenu">
@@ -43,9 +56,16 @@
 </div>
 
 <div id="settingsMenu" style="display: none;" class="gameMenu">
+    <H1>Settings</H1>
+    <p>Graphics:</p>
+    <button id="graphicsLowButton">Low</button>
+    <button id="graphicsMediumButton">Medium</button>
+    <button id="graphicsHighButton">High</button>
     <button onclick="document.getElementById('settingsMenu').style.display = 'none'; document.getElementById('gameMenu').style.display = 'flex';">
         Back
     </button>
+    
+    
 
 </div>
 
