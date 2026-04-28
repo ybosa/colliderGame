@@ -16,7 +16,7 @@ const Controller = new controller(playerPos, canvas,MaxDist)
 let walls = new linkedList()
 let obstacles = new linkedList()
 let speed = 1; //[m/s]
-let acceleration =1; //[m/s^2]
+let acceleration =0.25; //[m/s^2]
 let totalDistance = 0;
 let coins = 0;
 let lost = false;
@@ -60,8 +60,11 @@ function gameLoop() {
             let startDist =lastColourBlockEnd
             let stopDist = startDist + 20 * speed + 200 * acceleration;
 
+            let obstaclePadding = speed *3 + 2;
+            if(startDist <10 ) obstaclePadding = speed *5 + 10;
+
             newWalls.push(...createWallsForAColourBlock(startDist,stopDist,colour))
-            newObstacles.push(...createObstaclesForAColourBlock(startDist,stopDist,colour,previousObstacleDist))
+            newObstacles.push(...createObstaclesForAColourBlock(startDist + obstaclePadding,stopDist,colour,previousObstacleDist))
 
 
 
@@ -117,7 +120,7 @@ function createWallsForAColourBlock(startDist,StopDist,colour){
 function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstacleDist){
     if(startDist >= StopDist) return [];
 
-    const minSpacing = speed + 10
+    const minSpacing = 2*speed + 10
     let firstPlaceDist = Math.max(startDist,previousObstacleDist+minSpacing)
     if(firstPlaceDist > StopDist) {
         return [];
@@ -125,19 +128,59 @@ function createObstaclesForAColourBlock(startDist,StopDist,colour,previousObstac
 
     let newObstacles = []
 
-    const switchTableSize = 10;
+    const defaultBonusProb = 5
+    const switchTableSize = 6+defaultBonusProb;
     const pick = Math.floor(Math.random()*switchTableSize)
     let nObstacles = Math.floor ((StopDist - startDist)/minSpacing);
     if(nObstacles < 1) nObstacles = 1;
 
-    switch (pick) {
-        default:
-            for (let i = 0; i < nObstacles; i++) {
-                const obstacleType = randomObstacleType();
-                newObstacles.push(new Obstacle(startDist + i * minSpacing,0,0,colour,obstacleType))
-            }
-            break;
+    while (nObstacles > 0 && startDist < StopDist && StopDist-startDist > minSpacing){
+        const pick = Math.floor(Math.random()*switchTableSize)
+        let angle = Math.random()*2*Math.PI;
+        let obstacleType = null; //used for falling through without breaks
+        switch (pick) {
+            case 0:
+                obstacleType = OBSTACLE_TYPES.twoHole
+            case 1:
+                obstacleType = (obstacleType) ? obstacleType :  OBSTACLE_TYPES.oneCorner;
+            case 2:
+                obstacleType = (obstacleType) ? obstacleType :  OBSTACLE_TYPES.twoCorner;
+            case 3:
+                obstacleType = (obstacleType) ? obstacleType :  OBSTACLE_TYPES.oneHole;
+                const SDist = startDist
+                const spacing = 2 + speed
+                const rotDir = (Math.random() < 0.5) ? 1 : -1
+                for (let i = 0; i< 3 && startDist <StopDist; i++) {
+                    newObstacles.push(new Obstacle(SDist + i * spacing,angle + rotDir * i * Math.PI/16 / speed,0,colour,obstacleType))
+                    startDist = SDist + i * spacing + minSpacing;
+                }
+                nObstacles--;
+                break
+            case 4:
+                obstacleType = OBSTACLE_TYPES.oneCorner;
+            case 5:
+                obstacleType = (obstacleType) ? obstacleType :  OBSTACLE_TYPES.twoHole;
+            case 6:
+                obstacleType = (obstacleType) ? obstacleType :  OBSTACLE_TYPES.oneHole;
+                const rotAmount = (Math.random() < 0.5) ? 0.25 : 0.5;
+                let rotatingAngle = angle;
+                for (let i = 0; i< 5 && startDist <StopDist && nObstacles > 0; i++) {
+                    newObstacles.push(new Obstacle(startDist + minSpacing,rotatingAngle + rotAmount * Math.PI,0,colour,obstacleType))
+                    rotatingAngle += rotAmount * Math.PI;
+                    startDist += minSpacing;
+                    nObstacles--;
+                }
+                break
+            default:
+                for (let i = 0; i < nObstacles; i++) {
+                    obstacleType = randomObstacleType();
+                    newObstacles.push(new Obstacle(startDist + i * minSpacing,angle,0,colour,obstacleType))
+                }
+                nObstacles = 0;
+                break;
+        }
     }
+
     return newObstacles;
 }
 

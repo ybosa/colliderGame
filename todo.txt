@@ -1,7 +1,8 @@
-change create walls and obstacles function to make it fun
 add basic ui
+    add graphics settings for fps
     add sensitivity slider
         set sensitivity based on if mobile or desktop
 add sound
 test on mobile
 add coin img
+fix CORS or generate a lookup table for all the images so cors isnt needed
