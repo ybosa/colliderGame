@@ -7,6 +7,7 @@ import Wall, { STYLES} from "./wall.js";
 import Obstacle, {coinName, fileType, OBSTACLE_TYPES, randomObstacleType} from "./obstacle.js";
 import {fileType as obstacleFiletype} from "./obstacle.js";
 import {DEBUG_MODE, GAME_TICK_RATE, MAX_RENDER_DIST} from "./config.js";
+import * as UI from "./ui.js";
 
 const playerPos = { x: 0, y: 0}
 const canvas = initCanvas()
@@ -38,7 +39,7 @@ let gameState = new GameState()
 
 export function startGame(){
     gameState = new GameState(gameState.colour,true)
-    canvas.requestPointerLock();
+    UI.startGame(canvas)
 }
 
 
@@ -216,7 +217,7 @@ function collectCoins(){
 }
 
 function loseGame(){
-    console.log("you lose")
+    UI.showLoseMenu(Number((gameState.speed).toFixed(2)* 10), gameState.coins)
     gameState.speed = 0;
     gameState.acceleration = 0;
     gameState.lost = true;
