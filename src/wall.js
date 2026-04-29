@@ -1,13 +1,12 @@
-
 export default class Wall {
-    constructor(distance, angle, rotSpeed,colour,style) {
+    constructor(distance, angle, rotSpeed, colour, style) {
         this.distance = distance;
         this.angle = angle;
         this.rotSpeed = rotSpeed;
         this.colour = colour;
         this.style = style;
 
-        if(!this.style) this.style = pickRandomStyle()
+        if (!this.style) this.style = pickRandomStyle()
     }
 
     comparator(elementToAdd, existingElement) {

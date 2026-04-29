@@ -1,15 +1,15 @@
 "use strict";
-import {DEBUGVARS, DEBUG_MODE,SENSITIVITY,CLOSEST_REL_WALL_DIST} from "./config.js";
+import {DEBUGVARS, DEBUG_MODE, SENSITIVITY, CLOSEST_REL_WALL_DIST} from "./config.js";
 import {attemptLock} from "./ui.js";
 
-class Controller{
-    constructor(playerPos, canvas,MaxDist,cacheImageTransparency) {
+class Controller {
+    constructor(playerPos, canvas, MaxDist, cacheImageTransparency) {
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "i") {
                 DEBUGVARS.setDebugMode(!DEBUG_MODE)
             }
-            if(e.key === "c" && DEBUG_MODE){
+            if (e.key === "c" && DEBUG_MODE) {
                 console.log("caching image transparency")
                 cacheImageTransparency()
             }
@@ -23,8 +23,8 @@ class Controller{
             playerPos.x += event.movementX * SENSITIVITY;
             playerPos.y += event.movementY * SENSITIVITY;
 
-            const dist = Math.sqrt(playerPos.x*playerPos.x + playerPos.y*playerPos.y)
-            if(dist > MaxDist * CLOSEST_REL_WALL_DIST) {
+            const dist = Math.sqrt(playerPos.x * playerPos.x + playerPos.y * playerPos.y)
+            if (dist > MaxDist * CLOSEST_REL_WALL_DIST) {
                 playerPos.x = playerPos.x / dist * MaxDist * CLOSEST_REL_WALL_DIST;
                 playerPos.y = playerPos.y / dist * MaxDist * CLOSEST_REL_WALL_DIST;
             }

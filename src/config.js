@@ -3,7 +3,10 @@
 export const GAME_TICK_RATE = 100;//[hz] physics/ game logic calculations per second
 export const SCREEN_TICK_RATE = 30;//[hz] screen redraws per second
 export let SENSITIVITY = 1;
-export function setSensitivityConfig(sensitivity){SENSITIVITY = sensitivity}
+
+export function setSensitivityConfig(sensitivity) {
+    SENSITIVITY = sensitivity
+}
 
 export let DEBUG_MODE = false
 export const IMAGE_PATH = "./images/"
@@ -18,7 +21,7 @@ export const WALL_LINE_WIDTH = 3;
 export const WALL_ARC_LINE_SCALING_WIDTH = 15;
 export const COIN_REL_SIZE = 0.065
 
-export function setGraphicsConfig(level){
+export function setGraphicsConfig(level) {
     let graphicsOption;
     switch (level) {
         case "medium":
@@ -56,8 +59,12 @@ const HIGH_GRAPHICS = {
 }
 
 
-export default {GAME_TICK_RATE,SCREEN_TICK_RATE,DEBUG_MODE,IMAGE_PATH,SENSITIVITY}
+export default {GAME_TICK_RATE, SCREEN_TICK_RATE, DEBUG_MODE, IMAGE_PATH, SENSITIVITY}
 
-export const DEBUGVARS = {DEBUG_MODE, setDebugMode : (val) => {DEBUG_MODE = val} };
+export const DEBUGVARS = {
+    DEBUG_MODE, setDebugMode: (val) => {
+        DEBUG_MODE = val
+    }
+};
 
 

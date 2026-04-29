@@ -2,121 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Title</title>
 </head>
 <body>
 <script type="module">
-    import {startGame,setGraphics,setSensitivity,setPaused} from './src/game.js';
+    import {initUIScript} from "./src/ui.js";
 
-    function highlightGraphicsButton(level) {
-        const buttons = {
-            low: document.getElementById('graphicsLowButton'),
-            medium: document.getElementById('graphicsMediumButton'),
-            high: document.getElementById('graphicsHighButton')
-        };
-
-        Object.keys(buttons).forEach(key => {
-            if (key === level) {
-                buttons[key].style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--button-selected-color');
-            } else {
-                buttons[key].style.backgroundColor = getComputedStyle(document.querySelector('.gameMenu button')).backgroundColor;
-            }
-        });
-    }
-
-    function loadCookies() {
-        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-            const [key, value] = cookie.split('=').map(c => c.trim());
-            acc[key] = value;
-            return acc;
-        }, {});
-
-        if (cookies.graphics) {
-            setGraphics(cookies.graphics);
-            highlightGraphicsButton(cookies.graphics)
-        }
-        if (cookies.sensitivity) {
-            const sensitivity = parseFloat(cookies.sensitivity);
-            setSensitivity(sensitivity);
-            sensitivitySlider.value = sensitivity;
-            sensitivityValue.textContent = sensitivity;
-        }
-    }
-
-
-    function applyDefaultSettings() {
-        if (!document.cookie.includes('graphics')) {
-            setCookie('graphics', 'medium');
-        }
-
-        if (!document.cookie.includes('sensitivity')) {
-            setCookie('sensitivity', 1);
-        }
-    }
-
-    window.addEventListener('load', () => {
-        applyDefaultSettings();
-        loadCookies();
-    });
-
-    document.addEventListener('pointerlockchange', () => {
-        if (document.pointerLockElement === null) {
-            setPaused(true);
-            document.getElementById('gameMenu').style.display = 'flex';
-        }
-    })
-
-
-    function setCookie(fieldName, value) {
-        document.cookie = `${fieldName}=${value}; path=/`;
-    }
-
-
-
-
-    document.getElementById('playButton').addEventListener('click', () => {
-        document.getElementById('gameMenu').style.display = 'none';
-        startGame();
-    });
-
-    document.getElementById('restartButton').addEventListener('click', () => {
-        document.getElementById('loseMenu').style.display = 'none';
-        startGame();
-    });
-
-    document.getElementById('graphicsLowButton').addEventListener('click', () => {
-        setGraphics('low');
-        setCookie('graphics', 'low');
-        highlightGraphicsButton('low');
-    });
-
-    document.getElementById('graphicsMediumButton').addEventListener('click', () => {
-        setGraphics('medium');
-        setCookie('graphics', 'medium');
-        highlightGraphicsButton('medium');
-    });
-
-    document.getElementById('graphicsHighButton').addEventListener('click', () => {
-        setGraphics('high');
-        setCookie('graphics', 'high');
-        highlightGraphicsButton('high');
-    });
-
-    const sensitivitySlider = document.getElementById('sensitivitySlider');
-    const sensitivityValue = document.getElementById('sensitivityValue');
-
-    sensitivitySlider.addEventListener('input', () => {
-        sensitivityValue.textContent = sensitivitySlider.value;
-    });
-
-    sensitivitySlider.addEventListener('change', () => {
-        setSensitivity(parseFloat(sensitivitySlider.value));
-        setCookie('sensitivity', sensitivitySlider.value);
-    });
-
-
-
+    initUIScript();
 </script>
 
 <div id="gameMenu" class="gameMenu">
@@ -129,7 +22,7 @@
 
 <div id="loseMenu" style="display: none;" class="gameMenu">
     <p>Game Over</p>
-<!--    <p>Score: <span id="scoreValue">0</span></p>-->
+    <!--    <p>Score: <span id="scoreValue">0</span></p>-->
     <p>Speed: <span id="speedValue">0</span></p>
     <p>Coins Collected: <span id="coinsValue">0</span></p>
     <button id="restartButton">Restart</button>
@@ -154,11 +47,7 @@
     <button onclick="document.getElementById('settingsMenu').style.display = 'none'; document.getElementById('gameMenu').style.display = 'flex';">
         Back
     </button>
-
-
-
 </div>
-
 
 <style>
     html {
