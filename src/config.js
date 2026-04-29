@@ -8,7 +8,7 @@ export function setSensitivityConfig(sensitivity) {
     SENSITIVITY = sensitivity
 }
 
-export let DEBUG_MODE = false
+export let DEBUG_MODE = true
 export const IMAGE_PATH = "./images/"
 
 export const WALL_REL_SIZE = 1; //relative to screen size at dist = 1 [m]
@@ -42,14 +42,14 @@ export function setGraphicsConfig(level) {
 }
 
 const LOW_GRAPHICS = {
-    maxRenderDist: 50,
-    maxObstaclesToRender: 5,
+    maxRenderDist: 200,
+    maxObstaclesToRender: 10,
     detailThreshold: 20,
 }
 
 const MEDIUM_GRAPHICS = {
-    maxRenderDist: 100,
-    maxObstaclesToRender: 10,
+    maxRenderDist: 200,
+    maxObstaclesToRender: 20,
     detailThreshold: 10,
 }
 const HIGH_GRAPHICS = {
