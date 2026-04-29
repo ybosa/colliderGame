@@ -107,10 +107,11 @@ export function initUIScript() {
         loadCookies();
     });
 
-    document.addEventListener('pointerlockchange', () => {
+    //fix stupid firefox bug.
+    const userAgent = navigator.userAgent;
+    const isMobileFirefox = /Mobile|Tablet|Android/i.test(userAgent) && /Firefox/i.test(userAgent);
 
-        //stupid firefox bug.
-        const isMobileFirefox = /Mobile/i.test(navigator.userAgent) && /Firefox/i.test(navigator.userAgent);
+    document.addEventListener('pointerlockchange', () => {
 
         if (document.pointerLockElement === null && !isMobileFirefox) {
             setPaused(true);
