@@ -46,25 +46,6 @@ export function randomObstacleType() {
     return type
 }
 
-export function buildObstacles(currentDistance, maxDistance, minSpacing, MaxSpacing, rotSpacing, colour) {
-    let angle = 0, rotSpeed = 0;
-    let distance = currentDistance;
-    distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
-
-    let obstacles = []
-
-    while (distance < maxDistance) {
-        angle += rotSpacing;
-        const keys = Object.keys(OBSTACLE_TYPES);
-        const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        const type = OBSTACLE_TYPES[randomKey]
-        const typeName = OBSTACLE_TYPES[randomKey].fileName
-        obstacles.push(new Obstacle(distance, 0, rotSpeed, typeName + "-" + colour + fileType, type, 9))
-        distance += Math.random() * (MaxSpacing - minSpacing) + minSpacing;
-    }
-    return obstacles
-}
-
 export const OBSTACLE_TYPES = {
     oneCorner: {
         fileName: "1corner",

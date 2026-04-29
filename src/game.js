@@ -187,6 +187,7 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                     newObstacles.push(new Obstacle(SDist + i * spacing, angle + rotDir * i * Math.PI / 16 / speed, 0, colour, obstacleType))
                     startDist = SDist + i * spacing + minSpacing;
                 }
+                startDist += minSpacing;
                 nObstacles--;
                 break
             case 4:
@@ -203,6 +204,7 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                     startDist += minSpacing;
                     nObstacles--;
                 }
+                startDist += minSpacing;
                 break
             default:
                 for (let i = 0; i < nObstacles; i++) {
@@ -210,6 +212,7 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                     newObstacles.push(new Obstacle(startDist + i * minSpacing, angle, 0, colour, obstacleType))
                 }
                 nObstacles = 0;
+                startDist += nObstacles * minSpacing;
                 break;
         }
     }
