@@ -1,9 +1,10 @@
 add basic ui
     add graphics settings for fps
+        adjust graphics settings
     add sensitivity slider
         set sensitivity based on if mobile or desktop
 add sound
 test on mobile
-add coin img
+#add coin img
 fix wall styling
 fix obstacles placed too close together

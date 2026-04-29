@@ -52,7 +52,7 @@ export function setPaused(paused) {
 }
 
 export function startGame() {
-    if (gameState.paused) {
+    if (gameState.paused && !gameState.lost) {
         gameState.paused = false;
     } else {
         gameState = new GameState(gameState.colour, true)
@@ -316,3 +316,5 @@ export function setGraphics(level) {
 export function setSensitivity(sensitivity) {
     setSensitivityConfig(sensitivity)
 }
+
+export function isGameOver(){ return gameState.lost}

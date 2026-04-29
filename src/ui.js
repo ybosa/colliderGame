@@ -1,5 +1,29 @@
+import {isGameOver} from "./game.js";
+
 export function attemptLockSync(canvas) {
     attemptLock(canvas)
+}
+
+export function openMenu(menu) {
+    document.getElementById('gameMenu').style.display = 'none';
+    document.getElementById('settingsMenu').style.display = 'none';
+    document.getElementById('loseMenu').style.display = 'none';
+
+    if(!menu){
+
+    }
+    else if(menu === "settingsMenu"){
+        document.getElementById('settingsMenu').style.display = 'flex';
+        document.exitPointerLock();
+    }
+    else if((menu === "loseMenu" ) || (isGameOver() && menu === "gameMenu")){
+        document.getElementById('loseMenu').style.display = 'flex';
+        document.exitPointerLock();
+    }
+    else if(menu === "gameMenu"){
+        document.getElementById('gameMenu').style.display = 'flex';
+        document.exitPointerLock();
+    }
 }
 
 export async function attemptLock(canvas) {
@@ -12,7 +36,7 @@ export async function attemptLock(canvas) {
     } catch (error) {
         // console.error("Lock failed, retrying...", error);
         // Retry after a short delay
-        setTimeout(attemptLock, 1000);
+        setTimeout(attemptLock(canvas), 1550);
     }
 }
 
@@ -20,8 +44,7 @@ export function showLoseMenu(speed, coins) {
     const loseMenu = document.getElementById('loseMenu');
     loseMenu.querySelector('#speedValue').textContent = speed;
     loseMenu.querySelector('#coinsValue').textContent = coins;
-    loseMenu.style.display = 'flex';
-    document.exitPointerLock();
+    openMenu("loseMenu");
 }
 
 
@@ -87,19 +110,31 @@ export function initUIScript() {
     document.addEventListener('pointerlockchange', () => {
         if (document.pointerLockElement === null) {
             setPaused(true);
-            document.getElementById('gameMenu').style.display = 'flex';
+            openMenu("gameMenu");
         }
     })
 
 
     document.getElementById('playButton').addEventListener('click', () => {
-        document.getElementById('gameMenu').style.display = 'none';
         startGame();
+        openMenu(false)
     });
 
     document.getElementById('restartButton').addEventListener('click', () => {
-        document.getElementById('loseMenu').style.display = 'none';
         startGame();
+        openMenu(false)
+    });
+
+    document.getElementById('gameMenuButton').addEventListener('click', () => {
+        openMenu('gameMenu');
+    });
+
+    document.getElementById('settingsButton').addEventListener('click', () => {
+        openMenu('settingsMenu');
+    });
+
+    document.getElementById('settingsButton2').addEventListener('click', () => {
+        openMenu('settingsMenu');
     });
 
     document.getElementById('graphicsLowButton').addEventListener('click', () => {

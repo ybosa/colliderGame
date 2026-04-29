@@ -8,14 +8,12 @@
 <body>
 <script type="module">
     import {initUIScript} from "./src/ui.js";
-
-    initUIScript();
+    initUIScript(); //also starts game.js
 </script>
 
 <div id="gameMenu" class="gameMenu">
     <button id="playButton">Play</button>
-    <button id="settingsButton"
-            onclick="document.getElementById('gameMenu').style.display = 'none'; document.getElementById('settingsMenu').style.display = 'flex';">
+    <button id="settingsButton">
         Settings
     </button>
 </div>
@@ -26,8 +24,7 @@
     <p>Speed: <span id="speedValue">0</span></p>
     <p>Coins Collected: <span id="coinsValue">0</span></p>
     <button id="restartButton">Restart</button>
-    <button id="settingsButton2"
-            onclick="document.getElementById('loseMenu').style.display = 'none'; document.getElementById('settingsMenu').style.display = 'flex';">
+    <button id="settingsButton2">
         Settings
     </button>
 </div>
@@ -44,7 +41,7 @@
     <input id="sensitivitySlider" type="range" min="0.1" max="2" step="0.1" value="1"/>
     <span id="sensitivityValue">1</span>
 
-    <button onclick="document.getElementById('settingsMenu').style.display = 'none'; document.getElementById('gameMenu').style.display = 'flex';">
+    <button id="gameMenuButton">
         Back
     </button>
 </div>
