@@ -108,7 +108,11 @@ export function initUIScript() {
     });
 
     document.addEventListener('pointerlockchange', () => {
-        if (document.pointerLockElement === null) {
+
+        //stupid firefox bug.
+        const isMobileFirefox = /Mobile/i.test(navigator.userAgent) && /Firefox/i.test(navigator.userAgent);
+
+        if (document.pointerLockElement === null && !isMobileFirefox) {
             setPaused(true);
             openMenu("gameMenu");
         }
