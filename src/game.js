@@ -12,11 +12,6 @@ import * as UI from "./ui.js";
 const playerPos = { x: 0, y: 0}
 const canvas = initCanvas()
 const MaxDist = calculateMaxPlayerDist( canvas)
-const Controller = new controller(playerPos, canvas,MaxDist,cacheImageTransparency)
-
-
-initImages(OBSTACLE_TYPES ,COLOURS,coinName,obstacleFiletype)
-
 class GameState{
     constructor(colour,startGame = false){
         this.walls = new linkedList()
@@ -27,6 +22,7 @@ class GameState{
         this.coins = 0;
         this.lost = false;
         this.gameStarted = startGame;
+        this.paused = false;
 
         if(colour) this.colour = colour;
         else this.colour = randomNamedcolour();
@@ -34,17 +30,32 @@ class GameState{
         this.lastColourBlockEnd = 0;
     }
 }
-let gameState = new GameState()
 
+let gameState = new GameState()
+const Controller = new controller(playerPos, canvas,MaxDist,cacheImageTransparency)
+
+
+initImages(OBSTACLE_TYPES ,COLOURS,coinName,obstacleFiletype)
+
+
+export function setPaused(paused){
+    gameState.paused = paused
+}
 
 export function startGame(){
-    gameState = new GameState(gameState.colour,true)
+    if(gameState.paused){
+       gameState.paused = false;
+    }
+    else {
+        gameState = new GameState(gameState.colour, true)
+    }
     UI.startGame(canvas)
 }
 
 
 function gameLoop() {
     if(gameState.lost) return;
+    if(gameState.paused) return;
     if(hasCrashedIntoObstacle(playerPos,gameState.obstacles)){
         loseGame();
         return;

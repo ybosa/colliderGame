@@ -7,9 +7,7 @@
 </head>
 <body>
 <script type="module">
-    import {startGame} from './src/game.js';
-    import {setGraphics} from './src/game.js';
-    import {setSensitivity} from './src/game.js';
+    import {startGame,setGraphics,setSensitivity,setPaused} from './src/game.js';
 
     function highlightGraphicsButton(level) {
         const buttons = {
@@ -33,8 +31,6 @@
             acc[key] = value;
             return acc;
         }, {});
-
-        console.log(cookies)
 
         if (cookies.graphics) {
             setGraphics(cookies.graphics);
@@ -63,6 +59,14 @@
         applyDefaultSettings();
         loadCookies();
     });
+
+    document.addEventListener('pointerlockchange', () => {
+        if (document.pointerLockElement === null) {
+            setPaused(true);
+            document.getElementById('gameMenu').style.display = 'flex';
+        }
+    })
+
 
     function setCookie(fieldName, value) {
         document.cookie = `${fieldName}=${value}; path=/`;

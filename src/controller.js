@@ -1,11 +1,9 @@
 "use strict";
 import {DEBUGVARS, DEBUG_MODE,SENSITIVITY,CLOSEST_REL_WALL_DIST} from "./config.js";
+import {attemptLock} from "./ui.js";
 
 class Controller{
     constructor(playerPos, canvas,MaxDist,cacheImageTransparency) {
-        // canvas.addEventListener("click", () => {
-        //     // canvas.requestPointerLock();
-        // });
 
         document.addEventListener("keydown", (e) => {
             if (e.key === "i") {
