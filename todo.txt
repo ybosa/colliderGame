@@ -1,5 +1,3 @@
 add sound
-test on mobile
-#add coin img
+#test on mobile
 fix wall styling
-fix obstacles placed too close together
