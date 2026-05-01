@@ -153,7 +153,7 @@ function createWallsForAColourBlock(startDist, StopDist, colour) {
 function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObstacleDist, speed) {
     if (startDist >= StopDist) return [];
 
-    const minSpacing = 2 * speed + 10
+    const minSpacing = Math.max(speed + 10, 1.5 * speed)
     let firstPlaceDist = Math.max(startDist, previousObstacleDist + minSpacing)
     if (firstPlaceDist > StopDist) {
         return [];
@@ -163,7 +163,6 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
 
     const defaultBonusProb = 5
     const switchTableSize = 6 + defaultBonusProb;
-    const pick = Math.floor(Math.random() * switchTableSize)
     let nObstacles = Math.floor((StopDist - startDist) / minSpacing);
     if (nObstacles < 1) nObstacles = 1;
 
@@ -180,12 +179,12 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                 obstacleType = (obstacleType) ? obstacleType : OBSTACLE_TYPES.twoCorner;
             case 3:
                 obstacleType = (obstacleType) ? obstacleType : OBSTACLE_TYPES.oneHole;
-                const SDist = startDist
                 const spacing = 2 + speed
                 const rotDir = (Math.random() < 0.5) ? 1 : -1
-                for (let i = 0; i < 3 && startDist < StopDist; i++) {
-                    newObstacles.push(new Obstacle(SDist + i * spacing, angle + rotDir * i * Math.PI / 16 / speed, 0, colour, obstacleType))
-                    startDist = SDist + i * spacing + minSpacing;
+                for (let i = 0; i < 3 && startDist + i * spacing < StopDist; i++) {
+                    if(startDist + i * spacing > StopDist) break;
+                    newObstacles.push(new Obstacle(startDist + i * spacing, angle + rotDir * i * Math.PI / 16 / speed, 0, colour, obstacleType))
+                    startDist += spacing + i * spacing;
                 }
                 startDist += minSpacing;
                 nObstacles--;
@@ -198,7 +197,8 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                 obstacleType = (obstacleType) ? obstacleType : OBSTACLE_TYPES.oneHole;
                 const rotAmount = (Math.random() < 0.5) ? 0.25 : 0.5;
                 let rotatingAngle = angle;
-                for (let i = 0; i < 5 && startDist < StopDist && nObstacles > 0; i++) {
+                for (let i = 0; i < 5 && startDist + minSpacing < StopDist && nObstacles > 0; i++) {
+                    if(startDist + minSpacing > StopDist) break;
                     newObstacles.push(new Obstacle(startDist + minSpacing, rotatingAngle + rotAmount * Math.PI, 0, colour, obstacleType))
                     rotatingAngle += rotAmount * Math.PI;
                     startDist += minSpacing;
@@ -208,6 +208,7 @@ function createObstaclesForAColourBlock(startDist, StopDist, colour, previousObs
                 break
             default:
                 for (let i = 0; i < nObstacles; i++) {
+                    if(startDist + i * minSpacing > StopDist) break;
                     obstacleType = randomObstacleType();
                     newObstacles.push(new Obstacle(startDist + i * minSpacing, angle, 0, colour, obstacleType))
                 }
